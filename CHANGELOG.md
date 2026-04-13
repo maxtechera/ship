@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-04-13
+
+ship-engine GTM pipeline migrated from private workspace.
+
+- `ship-engine/` — full 8-stage GTM pipeline: validate → strategy → awareness → lead-capture → nurture → closing → launch → measure
+- `ship-engine/engine.py` — Linear run management, stage transitions, talent tickets, lesson extraction
+- `ship-engine/approval_queue.py` — content approval workflow (Telegram + Linear inline buttons, batch + daily digest)
+- `ship-engine/WORKFLOW.md` — canonical pipeline spec (decisions, gate logic, blackboard protocol)
+- `supervisors/` — 10 supervisor SKILL.md files (engine + 9 stage supervisors)
+- All hardcoded `/data/` paths replaced with env-var-first lookups (`LINEAR_API_KEY`, `SHIP_RUNS_DIR`, `CLAWDBOT_DIR`, etc.)
+- `.env.example` added for all configurable variables
+- Credentials preflight wires into team spawn gate (see SKILL.md § Team Credential Gate)
+
 ## [0.1.0] — 2026-04-13
 
 Initial release. Ships the `credentials` preflight skill extracted from Max Techera's private workspace.

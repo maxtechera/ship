@@ -1,7 +1,7 @@
 {
   "name": "ship",
-  "version": "0.1.0",
-  "description": "End-to-end GTM pipeline + credentials preflight. v0.1 ships the credentials health-check skill.",
+  "version": "0.2.0",
+  "description": "Credentials preflight + full GTM pipeline. Health-check 30+ CLIs/tokens, then execute idea → validate → market → sell → measure.",
   "settings": [
     {
       "name": "Credentials Directory",
@@ -14,6 +14,18 @@
       "description": "Directory of additional YAML check definitions to merge into the core registry (default: $SHIP_CRED_DIR/extensions)",
       "envVar": "SHIP_EXTENSIONS_DIR",
       "sensitive": false
+    },
+    {
+      "name": "Ship Runs Directory",
+      "description": "Where ship-engine stores active run state (default: ship-engine/runs/)",
+      "envVar": "SHIP_RUNS_DIR",
+      "sensitive": false
+    },
+    {
+      "name": "Linear API Key",
+      "description": "Linear API key for ship-engine run management",
+      "envVar": "LINEAR_API_KEY",
+      "sensitive": true
     }
   ]
 }

@@ -1,7 +1,7 @@
 ---
 name: ship
-version: "0.1.0"
-description: "Credentials preflight and GTM pipeline for AI agents. Check 30+ CLIs and API tokens before you deploy."
+version: "0.2.0"
+description: "Credentials preflight + GTM pipeline. Health-check 30+ CLIs/tokens, then execute idea → validate → market → sell → measure."
 argument-hint: ''
 allowed-tools: Bash, Read, Write
 homepage: https://github.com/maxtechera/ship
@@ -17,11 +17,19 @@ metadata:
       optionalEnv:
         - SHIP_CRED_DIR
         - SHIP_EXTENSIONS_DIR
+        - SHIP_RUNS_DIR
+        - SHIP_ARCHIVE_DIR
+        - LINEAR_API_KEY
+        - LINEAR_TOKEN_PATH
+        - GOOGLE_ANALYTICS_TOKEN_PATH
+        - CLAWDBOT_DIR
       bins:
         - python3
     primaryEnv: ""
     files:
       - "credentials/scripts/*"
+      - "ship-engine/engine.py"
+      - "ship-engine/approval_queue.py"
     tags:
       - credentials
       - preflight
@@ -29,6 +37,7 @@ metadata:
       - launch
       - deploy
       - ship
+      - pipeline
 ---
 
 # ship
@@ -38,7 +47,8 @@ Credentials preflight and GTM pipeline for AI agents. Part of the maxtechera ski
 ## Sub-skills
 
 - **[credentials](credentials/SKILL.md)** — health-check, install, and auth wizard for 30+ CLIs and API tokens. Run before every deploy.
-- **ship-engine** (v0.2, coming) — full idea → validate → build → market → sell → measure pipeline.
+- **[ship-engine](ship-engine/SKILL.md)** — full idea → validate → strategy → awareness → lead-capture → nurture → closing → launch → measure pipeline.
+- **[supervisors/engine](supervisors/engine/SKILL.md)** — always-on control loop. Reconciles Linear run tickets, delegates to stage supervisors, enforces critic gates.
 
 ## Team Credential Gate
 

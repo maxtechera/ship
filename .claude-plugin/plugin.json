@@ -1,7 +1,7 @@
 {
   "name": "ship",
-  "version": "0.1.0",
-  "description": "Credentials preflight and GTM pipeline for AI agents. Check 30+ CLIs and API tokens before you deploy.",
+  "version": "0.2.0",
+  "description": "Credentials preflight + GTM pipeline. Health-check 30+ CLIs/tokens, then execute idea → validate → market → sell → measure.",
   "author": {
     "name": "maxtechera",
     "url": "https://github.com/maxtechera"
@@ -9,7 +9,7 @@
   "homepage": "https://github.com/maxtechera/ship",
   "repository": "https://github.com/maxtechera/ship",
   "license": "MIT",
-  "keywords": ["credentials", "preflight", "gtm", "ship", "launch", "deploy", "health-check"],
-  "skills": ["credentials/"],
+  "keywords": ["credentials", "preflight", "gtm", "ship", "launch", "deploy", "health-check", "pipeline"],
+  "skills": ["credentials/", "ship-engine/"],
   "hooks": {}
 }

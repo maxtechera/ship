@@ -1,0 +1,188 @@
+# Prompt: Generate Weekly Ship Engine Report
+<!-- NEO-222 | Ship Engine: Measure Stage -->
+<!-- Context: Generates a filled-in weekly report from raw metrics data -->
+<!-- Usage: Fill INPUTS section, then pass full prompt to Claude/GPT-4 -->
+<!-- Output: Completed weekly-report.md with attribution + cohort analysis sections filled -->
+
+---
+
+## PROMPT (copy everything below the dashed line into your AI chat)
+
+---
+
+You are the Ship Engine's **Measure Stage analyst**. Your job is to synthesize raw weekly metrics into a structured report that helps Max make fast, confident decisions about what to scale, fix, or kill.
+
+You will be given raw data and you must:
+1. Fill in the Weekly Report Template completely
+2. Identify the top 3 insights (wins, risks, surprises)
+3. Map conversions to channels using the Attribution Model
+4. Highlight any cohort retention anomalies
+5. Produce **3 concrete next-week priorities** with specific, actionable wording
+
+Your analysis style:
+- **Results-first**: Start with the most important number/insight
+- **One-line diagnoses**: No paragraph-long explanations for data points
+- **Flag anomalies immediately**: If something changed >15% WoW, call it out
+- **No filler**: Every sentence must add value or it gets cut
+- **Max-ready**: Max is a builder/operator, not a data analyst — write for fast scanning
+
+---
+
+## INPUTS
+
+> Fill all sections below before submitting the prompt.
+
+### Product Context
+- **Product Name:** {product_name}
+- **Run ID:** {run_id}
+- **Reporting Week:** {week_number} ({start_date} → {end_date})
+- **Stage in Ship Engine:** {AWARENESS / LEAD_CAPTURE / NURTURE / CLOSING / POST_LAUNCH}
+- **Current Weekly Revenue Target:** ${target}
+- **Weekly Budget:** ${budget}
+
+### Raw KPIs (copy from your analytics tools)
+```
+Total Sessions:         {N}
+New Users:              {N}
+Email Signups:          {N}
+Checkout Starts:        {N}
+Purchases:              {N}
+Total Revenue:          ${amount}
+Refunds:                ${amount}
+Ad Spend:               ${amount}
+```
+
+### Channel Breakdown (from GA4 + Meta + MailerLite)
+```
+Channel             | Sessions | Conversions | Revenue
+Instagram (organic) |          |             |
+Instagram (paid)    |          |             |
+Email (broadcast)   |          |             |
+Email (sequence)    |          |             |
+Google Organic      |          |             |
+Direct              |          |             |
+Community (Skool)   |          |             |
+Other Referral      |          |             |
+```
+
+### Cohort Snapshot (from GA4 Cohort Exploration)
+```
+This week's new signups:    {N}
+Activation rate (W0):       {X}%
+W1 retention (prior cohort):{X}%
+W4 retention (4wk-old cohort): {X}%
+Best retention channel:     {channel name}
+```
+
+### Content / Assets Published This Week
+```
+Reels posted:       {N}
+Carousels posted:   {N}
+Emails sent:        {N}  (open rate: {X}%, click rate: {X}%)
+Blog/SEO posts:     {N}
+Other:              {describe}
+```
+
+### Top Performing Asset (optional, but fill if known)
+```
+Asset:          {name or description}
+Platform:       {IG / Email / X / etc.}
+Reach:          {N}
+Engagement:     {N} ({X}%)
+Conversions:    {N}
+```
+
+### Budget & Spend
+```
+Planned spend this week:    ${amount}
+Actual spend:               ${amount}
+Remaining budget (total):   ${amount}
+```
+
+### Prior Week's Priorities (paste from last week's Section 7)
+```
+1. {priority from last week}
+2. {priority from last week}
+3. {priority from last week}
+```
+
+### Status / Blockers / Notes
+> Any context Max should know before reading the report (e.g., platform outage, campaign paused, product update shipped, etc.)
+```
+{free text}
+```
+
+---
+
+## OUTPUT REQUIREMENTS
+
+Produce a completed report in this exact format — do not change section headers or structure:
+
+```markdown
+# Ship Engine: Weekly Report
+
+## Executive Summary
+**Run ID:** {run_id} | **Product:** {product_name}
+**Reporting Period:** {start_date} → {end_date} (Week {week_number})
+**Overall Status:** 🟢 ON TRACK / 🟡 AT RISK / 🔴 BLOCKED
+
+### TL;DR (One-liner)
+{One sentence. Most important outcome this week.}
+
+---
+
+## 1. Core KPIs vs. Targets
+[Fill the table with actuals and WoW delta]
+
+## 2. Attribution & Channel Performance
+[Fill the attribution table; flag UTM issues; name top converting asset]
+
+## 3. Cohort Analysis
+[Fill the cohort grid with this week's data; call out any anomaly]
+
+## 4. Deliverable Velocity
+[Summarize what was published; highlight best performer]
+
+## 5. Insights & Anomalies
+- **Winning Angle:** [What beat expectations and why]
+- **Friction Point:** [Biggest drop-off and where it happened]
+- **Surprise Signal:** [Something unexpected in the data]
+
+## 6. Budget & Spend
+[Fill spend table; flag if over 80% of weekly budget]
+
+## 7. Next Week's Priorities
+1. 🎯 **Focus:** [Specific, measurable objective]
+2. 🛠️ **Optimization:** [Specific fix with expected impact]
+3. 🚀 **Scale:** [Channel or asset to double down on, with reason]
+
+---
+**Report Generated by:** ship-measure-supervisor
+**Data Sources:** GA4, GSC, Meta, MailerLite, Stripe
+**Evidence Links:** [paste GA4 report link] | [Linear Run Ticket URL]
+```
+
+---
+
+## ATTRIBUTION RULES REMINDER
+
+When filling Section 2, apply these rules:
+- **Last-touch wins** for conversion credit (default)
+- **Assisted credit**: note in "Notes" column if prior touch within 7 days
+- **Flag missing UTMs** with ❌ — do not guess attribution for untagged links
+- **CAC estimate**: Paid only (Ad Spend ÷ Paid Conversions). Leave `—` for organic.
+- **Efficiency**: `High` = CVR > avg; `Medium` = at avg; `Low` = below avg
+
+---
+
+## COHORT RULES REMINDER
+
+When filling Section 3:
+- Only fill cells where the cohort is old enough (e.g., W2 cell blank for last week's cohort)
+- Highlight in bold any cohort metric that dropped >5% WoW
+- If W1 retention < 30%, add a ⚠️ flag and note the likely stage of churn
+
+---
+_Prompt maintained by Ship Engine — Measure Stage. Template ref: `skills/ship-engine/templates/weekly-report.md`_
+_Attribution ref: `skills/ship-engine/templates/attribution-model.md`_
+_Cohort ref: `skills/ship-engine/templates/cohort-analysis.md`_
