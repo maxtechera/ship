@@ -10,6 +10,6 @@
   "repository": "https://github.com/maxtechera/ship",
   "license": "MIT",
   "keywords": ["credentials", "preflight", "gtm", "ship", "launch", "deploy", "health-check", "pipeline"],
-  "skills": ["credentials/", "ship-engine/"],
+  "skills": ["credentials/SKILL.md", "ship-engine/SKILL.md", "supervisors/engine/SKILL.md"],
   "hooks": {}
 }

@@ -18,18 +18,12 @@ metadata:
         - SHIP_CRED_DIR
         - SHIP_EXTENSIONS_DIR
         - SHIP_RUNS_DIR
-        - SHIP_ARCHIVE_DIR
         - LINEAR_API_KEY
-        - LINEAR_TOKEN_PATH
-        - GOOGLE_ANALYTICS_TOKEN_PATH
-        - CLAWDBOT_DIR
-      bins:
-        - python3
+      bins: []
     primaryEnv: ""
     files:
-      - "credentials/scripts/*"
-      - "ship-engine/engine.py"
-      - "ship-engine/approval_queue.py"
+      - "credentials/registry/core.yml"
+      - "ship-engine/WORKFLOW.md"
     tags:
       - credentials
       - preflight
@@ -54,33 +48,29 @@ Credentials preflight and GTM pipeline for AI agents. Part of the maxtechera ski
 
 Before spawning an agent team, validate every token the team needs:
 
-```bash
-python3 ~/.claude/skills/ship/credentials/scripts/check_local.py \
-  --only "github,railway,vercel,openai,anthropic" \
-  --json | jq '.failed | length == 0'
+```
+Read credentials/registry/core.yml
+# Filter to required IDs, run each verify_cmd, collect failures
 ```
 
 In Claude Code, call this before `TeamCreate`:
 
 ```
-# 1. Preflight — block team spawn on missing credentials
-python3 credentials/scripts/check_local.py --only "<required-tokens>" --json
-
+# 1. Preflight — read registry/core.yml, run verify_cmd for each required token
 # 2. If all pass → spawn team
 TeamCreate team_name="<project>"
 Agent name="builder" team_name="<project>" isolation="worktree" run_in_background=true
 ...
-
-# 3. If any fail → print fix commands, halt
-python3 credentials/scripts/check_local.py --only "<required-tokens>" --fix
+# 3. If any fail → print fix_cmd for each failure, halt — do not spawn
 ```
 
 This is the LAUNCH gate. Missing tokens surface before agents start, not mid-sprint.
 
 ## Quick start
 
-```bash
-python3 ~/.claude/skills/ship/credentials/scripts/check_local.py
+```
+Read credentials/registry/core.yml
+# Run each verify_cmd — report pass/fail with fix_cmd on failures
 ```
 
 See [credentials/SKILL.md](credentials/SKILL.md) for full documentation.

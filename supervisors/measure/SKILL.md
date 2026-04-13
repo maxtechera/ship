@@ -54,7 +54,7 @@ Follow canonical contracts in `openclaw-config/skills/ship-engine/WORKFLOW.md`:
   - For high-risk recommendation events, post a prefilled Decision Packet before requesting Max decision
 
 ## Delegation Map
-- Reporting: `tools/analytics-collector.py`, `brand-report` skill
+- Reporting: `brand-report` skill
 - Asset-level social metrics + scoring (day-1 IG): `content-measure`
 - Content iteration tickets: route to the relevant supervisor (Awareness/Lead Capture/etc)
 

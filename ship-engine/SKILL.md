@@ -15,11 +15,7 @@ metadata:
       optionalEnv:
         - LINEAR_API_KEY
         - SHIP_RUNS_DIR
-        - SHIP_ARCHIVE_DIR
-        - GOOGLE_ANALYTICS_TOKEN_PATH
-        - CLAWDBOT_DIR
-      bins:
-        - python3
+      bins: []
     tags:
       - gtm
       - pipeline

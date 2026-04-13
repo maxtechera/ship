@@ -260,7 +260,7 @@ Approval gates are owned by the adjacent supervisors:
 - Stage 6 (Pre-Launch gate) -> `ship-launch-supervisor`
 
 Implementation note:
-- The legacy `skills/ship-engine/engine.py` CLI is deprecated. Ship Engine is skills-first and runs via wake-driven supervision.
+- Ship Engine is skills-first and runs via wake-driven supervision — no CLI scripts.
 - Active control loop is `skills/ship-engine-supervisor/SKILL.md` delegating to `skills/ship-*-supervisor/SKILL.md`.
 
 ---
@@ -894,7 +894,7 @@ All talent tickets go to a single queue. Designed to be batchable — "here are 
 - Adapted per platform format: carousels (IG), threads (X), short-form video (TikTok/Reels/Shorts), long-form (YouTube/blog), posts (LinkedIn/Reddit)
 
 **Distribution:**
-- Produce a publish-ready pack for all platforms and queue it in `tools/content-engine.py` (commands: `add`, `sync-trending`, `plan-week`, `today`, `script`, `batch-prep`, `posted`) to manage the content pipeline.
+- Produce a publish-ready pack for all platforms and queue it in `content-pipeline skill` (commands: `add`, `sync-trending`, `plan-week`, `today`, `script`, `batch-prep`, `posted`) to manage the content pipeline.
 - Social publishing is user-enabled: no platform draft/calendar step is required; Max enables actual publishing when ready. If Meta API is configured, publishing can be automated AFTER enablement.
 - AI generation at the core of content adaptation per platform
 - Content calendar: pre-launch teasers → launch push → post-launch tutorials/results/social proof
@@ -1174,7 +1174,7 @@ All emails in the sequence generated as complete, deployable artifacts:
 - Posts written for all platforms: per-platform tone and format, sourced from Awareness Agent's content bank. All copy humanized via the `humanize` skill with `channel={platform}` before output.
 - Hero images generated for each post via `content-image` skill (Gemini-first)
 - Posts formatted as a structured schedule: `content-drip/schedule.csv` with columns: day, platform, copy, image path, status
-- Content pipeline managed via `tools/content-engine.py` — use `sync-trending`/`add` to queue posts, `plan-week` for calendar view, `today` for daily queue, `posted` to mark published
+- Content pipeline managed via `content-pipeline skill` — use `sync-trending`/`add` to queue posts, `plan-week` for calendar view, `today` for daily queue, `posted` to mark published
 - Publishing is user-enabled: queue publish-ready assets; Max enables actual publishing. If Meta API is configured, publishing can be automated AFTER enablement.
 - Schedule publishing cadence via `cron` tool — daily posts for first 14 days, weekly cadence thereafter
 
@@ -2254,7 +2254,7 @@ Every production task maps to a specific tool or pipeline. This is how the engin
 | Analytics reporting | `brand-report` skill | Comprehensive cross-channel report across data sources; run on Phase 1 daily, Phase 2 weekly cadence |
 | Analytics setup | Web analytics + UTM generation | Custom event schema configured; UTM links batch-generated; end-to-end verification via `browser` tool |
 | Instagram publishing | `tools/lib/meta_api.py` | Publish posts, reels, stories to @[REDACTED_HANDLE] AFTER Max enables publishing; pull insights (reach, engagement, saves) |
-| Content pipeline | `tools/content-engine.py` | Queue, plan-week, today, script, batch-prep, posted, stats, backlog commands. Manages full content lifecycle. |
+| Content pipeline | `content-pipeline skill` | Queue, plan-week, today, script, batch-prep, posted, stats, backlog commands. Manages full content lifecycle. |
 | Research (market/pain) | `tools/research.py` | `--deep` for Perplexity sonar research; `--x-only` for X/Twitter via xAI; `--social` for multi-source social signals |
 | Deep research (async/overnight) | `gemini-deep-research` skill | Full market/competitor research via Gemini's research agent; async, no Perplexity/xAI credits needed; ideal for VALIDATE stage |
 | Parallel cheap execution | `swarm` skill | Gemini Flash workers for parallel stage execution; 200x cheaper than Opus; use for the 4 parallel stages in PARALLEL state |
@@ -2291,8 +2291,8 @@ Quick-reference table of every service available on this instance and where it f
 | `web_search` (Brave API) | Web search for Reddit/HN threads, competitor pages, keyword research | Validate, Strategy, All |
 | `web_fetch` | Extract readable content from URLs; competitor pages, review sites | Validate, Strategy |
 | `humanize` skill | AI content humanizer → human-sounding copy. Channels: `twitter|blog|linkedin|instagram` | All content output stages |
-| `tools/content-engine.py` | Content pipeline: queue/add/plan-week/today/script/batch-prep/posted/stats/backlog | Awareness, Nurture, Launch |
-| `tools/content-engine.py` | Content pipeline management (pitch/posted/queue/add/plan-week/today/script/batch-prep/stats/backlog) | Awareness, Launch |
+| `content-pipeline skill` | Content pipeline: queue/add/plan-week/today/script/batch-prep/posted/stats/backlog | Awareness, Nurture, Launch |
+| `content-pipeline skill` | Content pipeline management (pitch/posted/queue/add/plan-week/today/script/batch-prep/stats/backlog) | Awareness, Launch |
 | `daily-content-brief` skill | Daily content brief generation | Launch, Measure |
 | `content-image` skill | Batch image generation via Gemini. Gallery + index.html output. | Awareness (all visual assets) |
 | `video-frames` skill | Extract frames/clips from videos with ffmpeg | Awareness (video repurposing) |

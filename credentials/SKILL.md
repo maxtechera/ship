@@ -1,9 +1,9 @@
 ---
 name: credentials
-version: "0.1.0"
-description: "Health-check, install, and auth wizard for 30+ CLIs and API tokens. Catches missing credentials before your deploy fails."
+version: "0.2.0"
+description: "Health-check 30+ CLIs and API tokens before you deploy. Agent-executed preflight using registry/core.yml."
 argument-hint: ''
-allowed-tools: Bash, Read, Write
+allowed-tools: Bash, Read
 homepage: https://github.com/maxtechera/ship
 repository: https://github.com/maxtechera/ship
 author: maxtechera
@@ -22,11 +22,10 @@ metadata:
       optionalEnv:
         - SHIP_CRED_DIR
         - SHIP_EXTENSIONS_DIR
-      bins:
-        - python3
+      bins: []
     primaryEnv: ""
     files:
-      - "scripts/*"
+      - "registry/core.yml"
     tags:
       - credentials
       - preflight
@@ -39,50 +38,33 @@ metadata:
 
 # Credentials
 
-Health-check, install, and auth wizard for the CLI tools and API tokens your agents depend on.
+Health-check the CLI tools and API tokens your agents depend on. Run before every deploy, before `TeamCreate`, before any pipeline stage that needs external access.
 
-Covers 30+ common integrations out of the box — GitHub, Vercel, Railway, Render, Linear, Supabase, Twilio, ElevenLabs, MailerLite, PostHog, Meta, ManyChat, Telegram, Brave, Perplexity, OpenAI, Anthropic, Gemini, xAI, Google OAuth (via `gog`), and more. Workspace-specific services add on via YAML extensions.
+Covers 30+ integrations out of the box — GitHub, Vercel, Railway, Render, Linear, Supabase, Twilio, ElevenLabs, MailerLite, PostHog, Meta, ManyChat, Telegram, Brave, Perplexity, OpenAI, Anthropic, Gemini, xAI, Google OAuth (via `gog`), and more.
 
-## Scripts
+## How to Run a Credential Check
 
-| Script | Purpose |
-|---|---|
-| `check_local.py` | Full local credential health check (32 checks on Mac) |
-| `check_all.py` | Container/server variant — adds service-specific checks (Stripe, Shopify, Notion, Discord, Gamma, gateway) |
-| `install.py` | Interactive wizard to install missing CLIs via brew/npm |
-| `auth.sh` | Interactive auth wizard for all CLIs |
-| `refresh.py` | Refresh rotating tokens (where supported) |
+Read `registry/core.yml` to see all check IDs and their verification commands. Then execute each check using Bash:
 
-## Quick Start
-
-```bash
-# Check everything
-python3 ~/.claude/skills/credentials/scripts/check_local.py
-
-# Only failures
-python3 ~/.claude/skills/credentials/scripts/check_local.py --quiet
-
-# With fix commands
-python3 ~/.claude/skills/credentials/scripts/check_local.py --fix
-
-# Check a single service
-python3 ~/.claude/skills/credentials/scripts/check_local.py --only google_oauth
-
-# JSON (automation-friendly)
-python3 ~/.claude/skills/credentials/scripts/check_local.py --json
-
-# Install missing CLIs (interactive wizard)
-python3 ~/.claude/skills/credentials/scripts/install.py
-
-# Install everything missing
-python3 ~/.claude/skills/credentials/scripts/install.py --all
-
-# Auth all CLIs interactively
-bash ~/.claude/skills/credentials/scripts/auth.sh
-
-# Show auth status
-bash ~/.claude/skills/credentials/scripts/auth.sh --list
 ```
+Read registry/core.yml
+# For each check: run the verify_cmd, capture output, report pass/fail
+```
+
+**Quick patterns:**
+
+Check all:
+```bash
+# For each entry in registry/core.yml: run verify_cmd, collect failures
+```
+
+Check specific tokens only (e.g. before a GTM team spawn):
+```bash
+# Filter registry/core.yml to entries whose id matches the required list
+# Run only those verify_cmds
+```
+
+Exit 0 if all pass. Exit 1 if any fail — print the fix_cmd for each failure.
 
 ## What Gets Checked
 
@@ -103,13 +85,12 @@ Twilio, ElevenLabs, MailerLite, PostHog.
 
 ## Credential Directory
 
-Directory selected by first match:
+Token files are resolved by first match:
 
 1. `$SHIP_CRED_DIR`
-2. `$OPENCLAW_CRED_DIR` (legacy alias, still honoured)
-3. `/data/.clawdbot` (existing OpenClaw container)
-4. `~/.clawdbot` (existing legacy Mac)
-5. `~/.config/ship/credentials` (default — auto-created on first write)
+2. `$OPENCLAW_CRED_DIR` (legacy alias)
+3. `~/.clawdbot` (existing Mac/container default)
+4. `~/.config/ship/credentials` (new default — auto-created on first write)
 
 Files inside (`chmod 700` recommended):
 
@@ -126,75 +107,50 @@ $SHIP_CRED_DIR/
 ├── .railway_token
 ├── .vercel_token
 ├── .twilio_sid + .twilio_token
-├── .shopify.json               # {shop, access_token, client_id, client_secret}
-├── .stripe_token
-├── .discord_token
-├── .notion_token
-├── .gamma_token
+├── .mailerlite_token
+├── .posthog_token
 ├── .manychat_token
 ├── .telegram_bot_token
 ├── .elevenlabs_token
 ├── .brave_token
-├── .mailerlite_token
-├── .posthog_token
-├── .zoom_account_id + .zoom_client_id + .zoom_client_secret
-├── .twitter_* + .linkedin_* + .tiktok_* + .youtube_*
 └── cookies/
-    ├── youtube.txt             # Netscape cookies for yt-dlp
-    └── skool-cookies.json
+    └── youtube.txt             # Netscape cookies for yt-dlp
 ```
 
 ## Team Credential Profiles
 
-Different agent teams need different credentials. Declare what a team requires and validate it in one shot before spawning.
+Validate only the tokens a specific team needs before spawning it.
 
-**Pattern:** pass `--only` with a comma-separated list of check IDs matching your team's needs.
+| Team | Required check IDs |
+|------|--------------------|
+| GTM team | `github,openai,anthropic,meta_token,mailerlite` |
+| Engineering team | `github,railway,vercel,supabase,openai,anthropic` |
+| Content team | `openai,anthropic,perplexity` |
+| Full ship-engine | `github,railway,vercel,openai,anthropic,meta_token,mailerlite` |
 
-| Team type | Required checks |
-|-----------|----------------|
-| GTM team (strategist + growth) | `github,openai,anthropic,meta_token,mailerlite,apollo` |
-| Engineering team (builder + tester) | `github,railway,vercel,supabase,openai,anthropic` |
-| Content team (strategist only) | `openai,anthropic,perplexity` |
-| Full ship-engine team | `github,railway,vercel,openai,anthropic,meta_token,mailerlite` |
+**Pattern — credential gate before TeamCreate:**
 
-**Validate before TeamCreate:**
-```bash
-# Returns exit code 0 if all pass, 1 if any fail
-python3 credentials/scripts/check_local.py \
-  --only "github,railway,vercel,openai,anthropic" \
-  --quiet  # only show failures
-
-# JSON for automation (parse in Claude Code)
-python3 credentials/scripts/check_local.py \
-  --only "github,railway,vercel,openai,anthropic" \
-  --json
+```
+# 1. Read registry/core.yml, filter to required IDs
+# 2. Run each verify_cmd
+# 3. If all pass → TeamCreate + spawn agents
+# 4. If any fail → print fix_cmd for each, halt
 ```
 
-**In ship-engine LAUNCH stage:** The launch supervisor calls this before `TeamCreate`. If any token fails, the team does not spawn — fix commands are printed and the launch is blocked until credentials are clean.
+This is the LAUNCH gate. Missing tokens surface before agents start, not mid-sprint.
 
 ## Extending
 
-Drop a `*.yml` file into `$SHIP_CRED_DIR/extensions/` (or the directory named by `$SHIP_EXTENSIONS_DIR`) to register additional checks. See [`extensions/README.md`](extensions/README.md) for the schema and [`../docs/extensions/my-service.yml.example`](../docs/extensions/my-service.yml.example) for a working sample.
-
-## Exit codes
-
-- `0` — all checks pass
-- `1` — at least one check failed
+Drop a `*.yml` file into `$SHIP_CRED_DIR/extensions/` (or `$SHIP_EXTENSIONS_DIR`) to register additional checks. See [`extensions/README.md`](extensions/README.md) for the schema.
 
 ## Structure
 
 ```
 credentials/
-├── SKILL.md                    # this file
-├── scripts/
-│   ├── check_local.py
-│   ├── check_all.py
-│   ├── install.py
-│   ├── auth.sh
-│   └── refresh.py
+├── SKILL.md                    # this file — agent instructions
 ├── registry/
-│   └── core.yml                # declarative check index (documentation)
-├── extensions/                 # drop your own *.yml here
+│   └── core.yml                # declarative check index (verify_cmd, fix_cmd per service)
+├── extensions/                 # drop your own *.yml check definitions here
 │   └── README.md
 └── references/
     └── fix-guide.md            # per-credential fix instructions
