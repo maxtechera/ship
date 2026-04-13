@@ -1,0 +1,21 @@
+# Example credentials extension.
+#
+# Copy this file to $SHIP_CRED_DIR/extensions/my-service.yml (or
+# $SHIP_EXTENSIONS_DIR/my-service.yml) to add a workspace-specific API-key
+# check to the registry. The check is documentation-only until v0.3 ships the
+# YAML runtime loader; for now it serves as the reference pattern for
+# describing a custom credential.
+
+version: 1
+checks:
+  - id: my_service
+    category: api-token
+    detect:
+      env: MY_SERVICE_API_KEY
+      token_file: .my_service_api_key
+      whoami:
+        url: https://api.my-service.example.com/me
+        auth: "header:Bearer"
+    fix:
+      summary: "Paste the My Service API key into the credential store"
+      template: "echo 'YOUR_KEY' > {cred_dir}/.my_service_api_key && chmod 600 {cred_dir}/.my_service_api_key"

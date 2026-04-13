@@ -61,7 +61,7 @@ export SHIP_CRED_DIR="$HOME/.my-creds"
 
 ### Extend
 
-Drop a `YAML` file into `$SHIP_CRED_DIR/extensions/` (or `$SHIP_EXTENSIONS_DIR/`) to add workspace-specific checks. See [`credentials/extensions/README.md`](credentials/extensions/README.md) and [`docs/extensions/kumello.yml.example`](docs/extensions/kumello.yml.example).
+Drop a `YAML` file into `$SHIP_CRED_DIR/extensions/` (or `$SHIP_EXTENSIONS_DIR/`) to add workspace-specific checks. See [`credentials/extensions/README.md`](credentials/extensions/README.md) and [`docs/extensions/my-service.yml.example`](docs/extensions/my-service.yml.example).
 
 ---
 

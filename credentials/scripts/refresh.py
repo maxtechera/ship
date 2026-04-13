@@ -26,15 +26,18 @@ from pathlib import Path
 
 # ─── Config ──────────────────────────────────────────────────────────────────
 
-def _default_claw_dir():
-    explicit = os.environ.get("OPENCLAW_CRED_DIR")
-    if explicit:
-        return explicit
-    if Path("/data/.clawdbot").exists():
-        return "/data/.clawdbot"
-    return str(Path.home() / ".clawdbot")
+def _default_cred_dir():
+    for env in ("SHIP_CRED_DIR", "OPENCLAW_CRED_DIR"):
+        explicit = os.environ.get(env)
+        if explicit:
+            return explicit
+    for legacy in ("/data/.clawdbot", str(Path.home() / ".clawdbot")):
+        if Path(legacy).exists():
+            return legacy
+    return str(Path.home() / ".config" / "ship" / "credentials")
 
-CLAW_DIR = _default_claw_dir()
+CRED_DIR = _default_cred_dir()
+CLAW_DIR = CRED_DIR  # backward-compat alias
 
 GREEN  = "\033[92m"
 RED    = "\033[91m"

@@ -1,20 +1,23 @@
 ---
 name: credentials
-description: Verify, validate, and fix workspace credentials and integrations. 32 checks (11 CLI + 21 API). Includes install wizard, auth wizard, and per-service whoami. Uses platform-aware ~/.clawdbot on Mac, /data/.clawdbot on container.
+description: Verify, validate, and fix local credentials for CLIs and APIs. 30+ checks (runtime CLIs, CLI auth, API tokens, Google OAuth). Includes install and auth wizards. Part of the ship skill pack.
 ---
 
-# Credentials Skill
+# Credentials
 
-Health-check, install, and auth wizard for all workspace credentials.
+Health-check, install, and auth wizard for the CLI tools and API tokens your agents depend on.
+
+Covers 30+ common integrations out of the box — GitHub, Vercel, Railway, Render, Linear, Supabase, Twilio, ElevenLabs, MailerLite, PostHog, Meta, ManyChat, Telegram, Brave, Perplexity, OpenAI, Anthropic, Gemini, xAI, Google OAuth (via `gog`), and more. Workspace-specific services add on via YAML extensions.
 
 ## Scripts
 
 | Script | Purpose |
 |---|---|
-| `check_local.py` | 32 checks: 11 CLI + 21 API whoami (local Mac) |
-| `check_all.py` | 21 checks: container credentials + integrations |
-| `install.py` | Idempotent installer with interactive wizard |
+| `check_local.py` | Full local credential health check (32 checks on Mac) |
+| `check_all.py` | Container/server variant — adds service-specific checks (Stripe, Shopify, Notion, Discord, Gamma, gateway) |
+| `install.py` | Interactive wizard to install missing CLIs via brew/npm |
 | `auth.sh` | Interactive auth wizard for all CLIs |
+| `refresh.py` | Refresh rotating tokens (where supported) |
 
 ## Quick Start
 
@@ -28,8 +31,11 @@ python3 ~/.claude/skills/credentials/scripts/check_local.py --quiet
 # With fix commands
 python3 ~/.claude/skills/credentials/scripts/check_local.py --fix
 
-# Check single service
+# Check a single service
 python3 ~/.claude/skills/credentials/scripts/check_local.py --only google_oauth
+
+# JSON (automation-friendly)
+python3 ~/.claude/skills/credentials/scripts/check_local.py --json
 
 # Install missing CLIs (interactive wizard)
 python3 ~/.claude/skills/credentials/scripts/install.py
@@ -44,91 +50,53 @@ bash ~/.claude/skills/credentials/scripts/auth.sh
 bash ~/.claude/skills/credentials/scripts/auth.sh --list
 ```
 
-## What Gets Checked (32)
+## What Gets Checked
 
 ### Runtime CLIs (4)
-
-| Check | Validation |
-|-------|------------|
-| `git` | `--version` |
-| `node` | `--version` |
-| `pnpm` | `--version` |
-| `python3` | `--version` |
+`git`, `node`, `pnpm`, `python3` — `--version` probe.
 
 ### CLI Auth (7) — checked via CLI whoami
+`gh`, `railway`, `vercel`, `linear`, `supabase`, `render`, `docker`.
 
-| Check | CLI command | Install |
-|-------|------------|---------|
-| `gh` | `gh auth status` | `brew install gh` |
-| `railway_cli` | `railway whoami` | `brew install railwayapp/tap/railway` |
-| `vercel_cli` | `vercel whoami` | `npm install -g vercel` |
-| `linear_cli` | `linear me` | `brew install schpet/tap/linear` |
-| `supabase_cli` | `supabase projects list` | `brew install supabase/tap/supabase` |
-| `render_cli` | `render whoami` | `brew tap render-oss/render && brew install render` |
-| `docker` | `docker info` | `brew install --cask docker` |
-
-### API Tokens (10) — no CLI, live HTTP whoami
-
-| Check | Env var | File | Whoami |
-|-------|---------|------|--------|
-| `openai_token` | `OPENAI_API_KEY` | `.openai_token` | `GET /v1/models` |
-| `anthropic_token` | `ANTHROPIC_API_KEY` | `.anthropic_token` | `GET /v1/models` |
-| `gemini_token` | `GEMINI_API_KEY` | `.gemini_token` | `GET /v1beta/models` |
-| `xai_token` | `XAI_API_KEY` | `.xai_token` | `GET /v1/models` |
-| `perplexity_token` | `PERPLEXITY_KEY` | `.perplexity_token` | `POST /chat/completions` |
-| `meta_token` | `META_ACCESS_TOKEN` | `.meta_token` | `GET /v21.0/me` |
-| `manychat_token` | `MANYCHAT_TOKEN` | `.manychat_token` | `GET /fb/page/getInfo` |
-| `telegram_token` | `TELEGRAM_BOT_TOKEN` | `.telegram_bot_token` | `GET /bot{token}/getMe` |
-| `brave_token` | `BRAVE_API_KEY` | `.brave_token` | `GET /web/search` |
-| `zoom` | `ZOOM_ACCESS_TOKEN` | `.zoom_token` | `GET /v2/users/me` |
+### API Tokens (10) — live HTTP whoami
+OpenAI, Anthropic, Gemini, xAI, Perplexity, Meta, ManyChat, Telegram, Brave, Zoom.
 
 ### CLI-first (prefer CLI, fall back to API token) (4)
-
-| Check | CLI whoami | Fallback |
-|-------|-----------|----------|
-| `twilio` | `twilio profiles:list` | API token check |
-| `elevenlabs` | `elevenlabs auth whoami` | API token check |
-| `mailerlite` | `mailerlite account list` | API token check |
-| `posthog` | `posthog-cli query` | API token check |
+Twilio, ElevenLabs, MailerLite, PostHog.
 
 ### Google Suite (7) — gog CLI manages OAuth
-
-| Check | What's tested |
-|-------|---------------|
-| `google_oauth` | `gog auth list --check` |
-| `ga4` | GA4 Data API sessions report |
-| `gsc` | Search Console site list |
-| `gcal` | Calendar primary info |
-| `gdrive` | Drive user info |
-| `gmail` | Gmail profile |
-| `skool` | Cookie file + age + gmail dependency |
+`google_oauth`, `ga4`, `gsc`, `gcal`, `gdrive`, `gmail`, `skool`.
 
 ## Credential Directory
 
-Platform-aware: `$OPENCLAW_CRED_DIR` > `/data/.clawdbot` (container) > `~/.clawdbot` (Mac)
+Directory selected by first match:
+
+1. `$SHIP_CRED_DIR`
+2. `$OPENCLAW_CRED_DIR` (legacy alias, still honoured)
+3. `/data/.clawdbot` (existing OpenClaw container)
+4. `~/.clawdbot` (existing legacy Mac)
+5. `~/.config/ship/credentials` (default — auto-created on first write)
+
+Files inside (`chmod 700` recommended):
 
 ```
-~/.clawdbot/                        # chmod 700
-├── .github_token                   # ghp_...
-├── .meta_token                     # EAA... (Meta/Instagram)
-├── .linear_token                   # lin_api_...
-├── .linear_webhook_secret          # Linear webhook HMAC
-├── .openai_token                   # sk-...
-├── .anthropic_token                # sk-ant-...
-├── .xai_token                      # xai-...
-├── .gemini_token                   # AI Studio key
-├── .perplexity_token               # pplx-...
+$SHIP_CRED_DIR/
+├── .github_token               # ghp_...
+├── .meta_token                 # EAA... (Meta/Instagram)
+├── .linear_token               # lin_api_...
+├── .openai_token               # sk-...
+├── .anthropic_token            # sk-ant-...
+├── .xai_token                  # xai-...
+├── .gemini_token
+├── .perplexity_token
 ├── .railway_token
 ├── .vercel_token
 ├── .twilio_sid + .twilio_token
-├── .google_analytics_token.json    # Legacy — gog CLI manages tokens now
-├── .google_client_secret           # Legacy — gog stores client creds
-├── .shopify.json                   # {shop, access_token, client_id, client_secret}
-├── .stripe_token                   # sk_live_... or sk_test_...
-├── .discord_token                  # Bot token (MTQ3...)
-├── .notion_token                   # ntn_...
-├── .kumello_token                  # Kumello API key
-├── .gamma_token                    # Gamma API key
+├── .shopify.json               # {shop, access_token, client_id, client_secret}
+├── .stripe_token
+├── .discord_token
+├── .notion_token
+├── .gamma_token
 ├── .manychat_token
 ├── .telegram_bot_token
 ├── .elevenlabs_token
@@ -136,53 +104,36 @@ Platform-aware: `$OPENCLAW_CRED_DIR` > `/data/.clawdbot` (container) > `~/.clawd
 ├── .mailerlite_token
 ├── .posthog_token
 ├── .zoom_account_id + .zoom_client_id + .zoom_client_secret
-├── .twitter_api_key + .twitter_api_secret  # Twitter/X OAuth
-├── .twitter_access_token + .twitter_access_secret
-├── .twitter_bearer_token
-├── .linkedin_access_token + .linkedin_person_urn
-├── .tiktok_access_token
-├── .youtube_access_token + .youtube_refresh_token  # YouTube upload OAuth
-├── .youtube_client_id + .youtube_client_secret
-├── .openclaw_gateway_token         # Gateway/webhook auth
+├── .twitter_* + .linkedin_* + .tiktok_* + .youtube_*
 └── cookies/
-    ├── youtube.txt                 # Netscape cookies for yt-dlp
+    ├── youtube.txt             # Netscape cookies for yt-dlp
     └── skool-cookies.json
 ```
 
-## Auth Methods by Service
+## Extending
 
-| Service | Primary auth | Fallback |
-|---------|-------------|----------|
-| GitHub | `gh` CLI | token file |
-| Railway | `railway` CLI | token file |
-| Vercel | `vercel` CLI | token file |
-| Linear | `linear` CLI | token file |
-| Google (GA4/GSC/Cal/Drive/Gmail) | `gog` CLI | token file |
-| Shopify | `shopify.py` CLI | `.shopify.json` |
-| Twilio | `twilio` CLI | token file |
-| ElevenLabs | `elevenlabs` CLI | token file |
-| MailerLite | `mailerlite` CLI | token file |
-| PostHog | `posthog-cli` | token file |
-| Skool | browser cookies + Gmail (for login codes) | — |
-| Discord | bot token (config) | token file |
-| Stripe | token file / env var | — |
-| Twitter/X | 5-part OAuth (API key/secret + access token/secret + bearer) | token files |
-| LinkedIn | access token + person URN | token files |
-| TikTok | access token | token file |
-| YouTube (uploads) | OAuth (client ID/secret + refresh token) | token files |
-| Zoom | 3-part S2S (account ID + client ID + client secret) | token files |
-| OpenAI, Anthropic, Gemini, xAI, Perplexity, Meta, ManyChat, Telegram, Brave, Notion, Kumello, Gamma | token file / env var | — |
+Drop a `*.yml` file into `$SHIP_CRED_DIR/extensions/` (or the directory named by `$SHIP_EXTENSIONS_DIR`) to register additional checks. See [`extensions/README.md`](extensions/README.md) for the schema and [`../docs/extensions/my-service.yml.example`](../docs/extensions/my-service.yml.example) for a working sample.
 
-## Skill Structure
+## Exit codes
+
+- `0` — all checks pass
+- `1` — at least one check failed
+
+## Structure
 
 ```
-skills/credentials/
-├── SKILL.md                        # This file
+credentials/
+├── SKILL.md                    # this file
 ├── scripts/
-│   ├── check_local.py              # 32 local Mac checks
-│   ├── check_all.py                # 21 container checks
-│   ├── install.py                  # CLI installer wizard
-│   └── auth.sh                     # Interactive auth wizard
+│   ├── check_local.py
+│   ├── check_all.py
+│   ├── install.py
+│   ├── auth.sh
+│   └── refresh.py
+├── registry/
+│   └── core.yml                # declarative check index (documentation)
+├── extensions/                 # drop your own *.yml here
+│   └── README.md
 └── references/
-    └── fix-guide.md                # Per-credential fix instructions
+    └── fix-guide.md            # per-credential fix instructions
 ```

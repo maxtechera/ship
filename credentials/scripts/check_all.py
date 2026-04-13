@@ -28,8 +28,23 @@ from pathlib import Path
 from typing import Optional
 
 # ─── Config ────────────────────────────────────────────────────────────────────
+#
+# Credential directory precedence (first hit wins):
+#   $SHIP_CRED_DIR → $OPENCLAW_CRED_DIR → /data/.clawdbot → ~/.clawdbot →
+#   ~/.config/ship/credentials (default)
 
-CLAWDBOT = Path(os.environ.get("OPENCLAW_CRED_DIR", "/data/.clawdbot"))
+def _default_cred_dir():
+    for env in ("SHIP_CRED_DIR", "OPENCLAW_CRED_DIR"):
+        explicit = os.environ.get(env)
+        if explicit:
+            return explicit
+    for legacy in ("/data/.clawdbot", str(Path.home() / ".clawdbot")):
+        if Path(legacy).exists():
+            return legacy
+    return str(Path.home() / ".config" / "ship" / "credentials")
+
+CRED_DIR = _default_cred_dir()
+CLAWDBOT = Path(CRED_DIR)  # backward-compat alias used throughout this file
 WORKSPACE = Path(os.environ.get("WORKSPACE_DIR",
     os.environ.get("OPENCLAW_WORKSPACE_DIR", "/data/workspace")))
 OPENCLAW_JSON = CLAWDBOT / "openclaw.json"
@@ -120,6 +135,11 @@ def _strip_ansi(s: str) -> str:
 
 def record(name: str, status: str, message: str, fix: str = ""):
     """Record a result. status: 'ok', 'fail', 'warn'."""
+    if fix:
+        # Fix templates were historically written against the container path
+        # `/data/.clawdbot`. Rewrite them to the active credential directory so
+        # output reflects the user's real environment.
+        fix = fix.replace("/data/.clawdbot", CRED_DIR)
     results.append({"name": name, "status": status, "message": message, "fix": fix})
 
 
@@ -943,17 +963,6 @@ def check_shopify():
         record(name, "fail", f"Shopify JSON parse error: {e}")
 
 
-def check_kumello():
-    name = "kumello"
-    token = get_credential("kumello") if HAS_SHARED_CONFIG else None
-    if not token:
-        token = read_file(CLAWDBOT / ".kumello_api_key")
-    if not token:
-        record(name, "warn", "No Kumello API key found")
-        return
-    record(name, "ok", f"Kumello API key present ({len(token)} chars)")
-
-
 def check_stripe():
     name = "stripe"
     token = get_credential("stripe") if HAS_SHARED_CONFIG else None
@@ -1013,7 +1022,6 @@ CREDENTIAL_CHECKS = {
     "discord":                check_discord,
     "gamma":                  check_gamma,
     "shopify":                check_shopify,
-    "kumello":                check_kumello,
     "stripe":                 check_stripe,
     "openclaw_gateway":       check_gateway_token,
 }

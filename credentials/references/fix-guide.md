@@ -8,8 +8,8 @@ Reference for regenerating, fixing, and understanding every credential in the wo
 
 | Symbol | Meaning |
 |--------|---------|
-| 🧑 Max | Requires Max's action (browser, interactive OAuth, account access) |
-| 🤖 Neo | Can be fixed autonomously (file creation, env vars, CLI) |
+| 🧑 User | Requires a human action (browser, interactive OAuth, account access) |
+| 🤖 Agent | Can be fixed autonomously (file creation, env vars, CLI) |
 | ⚠️ Gotcha | Known pitfall — read carefully |
 
 ---
@@ -18,16 +18,16 @@ Reference for regenerating, fixing, and understanding every credential in the wo
 
 ### 1. `.github_token` — GitHub Personal Access Token
 
-**Location:** `/data/.clawdbot/.github_token`  
+**Location:** `$SHIP_CRED_DIR/.github_token`  
 **Used by:** GitHub API calls, `gh` CLI backup auth, repository operations  
-**Who fixes:** 🧑 Max (account access required)  
-**Check:** `curl -s -H "Authorization: token $(cat /data/.clawdbot/.github_token)" https://api.github.com/user | jq .login`
+**Who fixes:** 🧑 User (account access required)  
+**Check:** `curl -s -H "Authorization: token $(cat $SHIP_CRED_DIR/.github_token)" https://api.github.com/user | jq .login`
 
 **Regenerate:**
 1. Go to https://github.com/settings/tokens/new
 2. Scopes needed: `repo`, `workflow`, `read:org`, `read:user`
 3. Copy the `ghp_...` token
-4. `echo 'ghp_NEW_TOKEN' > /data/.clawdbot/.github_token && chmod 600 /data/.clawdbot/.github_token`
+4. `echo 'ghp_NEW_TOKEN' > $SHIP_CRED_DIR/.github_token && chmod 600 $SHIP_CRED_DIR/.github_token`
 
 **Gotchas:**
 - Fine-grained tokens have expiry dates — classic tokens are safer for long-term use
@@ -37,16 +37,16 @@ Reference for regenerating, fixing, and understanding every credential in the wo
 
 ### 2. `.meta_token` — Facebook/Meta Graph API Token
 
-**Location:** `/data/.clawdbot/.meta_token`  
+**Location:** `$SHIP_CRED_DIR/.meta_token`  
 **Used by:** Meta/Instagram analytics, content publishing, CRM sync  
-**Who fixes:** 🧑 Max (Facebook account access required)  
-**Check:** `curl -s "https://graph.facebook.com/v21.0/me?access_token=$(cat /data/.clawdbot/.meta_token)" | jq .name`
+**Who fixes:** 🧑 User (Facebook account access required)  
+**Check:** `curl -s "https://graph.facebook.com/v21.0/me?access_token=$(cat $SHIP_CRED_DIR/.meta_token)" | jq .name`
 
 **Regenerate:**
 1. Go to https://developers.facebook.com/tools/explorer/
 2. Select your app → Generate Access Token
 3. Get a **long-lived** token (60 days): Exchange via Graph API OAuth endpoint
-4. `echo 'EAA_NEW_TOKEN' > /data/.clawdbot/.meta_token && chmod 600 /data/.clawdbot/.meta_token`
+4. `echo 'EAA_NEW_TOKEN' > $SHIP_CRED_DIR/.meta_token && chmod 600 $SHIP_CRED_DIR/.meta_token`
 
 **Gotchas:**
 - Short-lived tokens expire in ~1 hour — always use long-lived (60 day) tokens
@@ -58,15 +58,15 @@ Reference for regenerating, fixing, and understanding every credential in the wo
 
 ### 3. `.linear_token` — Linear API Key
 
-**Location:** `/data/.clawdbot/.linear_token`  
+**Location:** `$SHIP_CRED_DIR/.linear_token`  
 **Used by:** `tools/linear.py`, project/issue management  
-**Who fixes:** 🧑 Max (Linear account access, or can share token for Neo to write)  
-**Check:** `curl -s -X POST -H "Authorization: $(cat /data/.clawdbot/.linear_token)" -H "Content-Type: application/json" -d '{"query":"{ viewer { name } }"}' https://api.linear.app/graphql | jq .data.viewer.name`
+**Who fixes:** 🧑 User (Linear account access, or can share token for an agent to write)  
+**Check:** `curl -s -X POST -H "Authorization: $(cat $SHIP_CRED_DIR/.linear_token)" -H "Content-Type: application/json" -d '{"query":"{ viewer { name } }"}' https://api.linear.app/graphql | jq .data.viewer.name`
 
 **Regenerate:**
 1. Go to https://linear.app/[YOUR_WORKSPACE]/settings/api
 2. Create a new Personal API Key
-3. `echo 'lin_api_NEW_KEY' > /data/.clawdbot/.linear_token && chmod 600 /data/.clawdbot/.linear_token`
+3. `echo 'lin_api_NEW_KEY' > $SHIP_CRED_DIR/.linear_token && chmod 600 $SHIP_CRED_DIR/.linear_token`
 
 **Gotchas:**
 - Linear API keys don't expire but can be revoked
@@ -77,18 +77,18 @@ Reference for regenerating, fixing, and understanding every credential in the wo
 
 ### 4. `.linear_webhook_secret` — Linear Webhook Secret
 
-**Location:** `/data/.clawdbot/.linear_webhook_secret`  
+**Location:** `$SHIP_CRED_DIR/.linear_webhook_secret`  
 **Used by:** Linear webhook verification in the command center server  
-**Who fixes:** 🤖 Neo (can generate and update, but Max must update Linear settings too)  
-**Check:** `cat /data/.clawdbot/.linear_webhook_secret | wc -c` (should be >10)
+**Who fixes:** 🤖 Agent (can generate and update, but a human must update Linear settings too)  
+**Check:** `cat $SHIP_CRED_DIR/.linear_webhook_secret | wc -c` (should be >10)
 
 **Regenerate:**
 ```bash
-# Neo generates new secret
-openssl rand -hex 32 > /data/.clawdbot/.linear_webhook_secret
-chmod 600 /data/.clawdbot/.linear_webhook_secret
-cat /data/.clawdbot/.linear_webhook_secret
-# Max then updates Linear webhook settings with this secret:
+# Agent generates new secret
+openssl rand -hex 32 > $SHIP_CRED_DIR/.linear_webhook_secret
+chmod 600 $SHIP_CRED_DIR/.linear_webhook_secret
+cat $SHIP_CRED_DIR/.linear_webhook_secret
+# User then updates Linear webhook settings with this secret:
 # https://linear.app/[WORKSPACE]/settings/api → Webhooks → Edit → Secret
 ```
 
@@ -100,15 +100,15 @@ cat /data/.clawdbot/.linear_webhook_secret
 
 ### 5. `.railway_token` — Railway API Token
 
-**Location:** `/data/.clawdbot/.railway_token`  
+**Location:** `$SHIP_CRED_DIR/.railway_token`  
 **Used by:** Railway deployment management, `tools/railway.py`  
-**Who fixes:** 🧑 Max (Railway account access required)  
+**Who fixes:** 🧑 User (Railway account access required)  
 **Check:** Uses GraphQL API — run `check_all.py --only railway`
 
 **Regenerate:**
 1. Go to https://railway.app/account/tokens
 2. Create a new token (give it a descriptive name like "workspace-neo")
-3. `echo 'YOUR_TOKEN' > /data/.clawdbot/.railway_token && chmod 600 /data/.clawdbot/.railway_token`
+3. `echo 'YOUR_TOKEN' > $SHIP_CRED_DIR/.railway_token && chmod 600 $SHIP_CRED_DIR/.railway_token`
 
 **Gotchas:**
 - Railway tokens have no expiry but can be revoked
@@ -118,15 +118,15 @@ cat /data/.clawdbot/.linear_webhook_secret
 
 ### 6. `.perplexity_token` — Perplexity API Key
 
-**Location:** `/data/.clawdbot/.perplexity_token`  
+**Location:** `$SHIP_CRED_DIR/.perplexity_token`  
 **Used by:** `tools/research.py`, web-augmented AI queries  
-**Who fixes:** 🧑 Max (Perplexity account, billing setup needed)  
+**Who fixes:** 🧑 User (Perplexity account, billing setup needed)  
 **Check:** Run `check_all.py --only perplexity`
 
 **Regenerate:**
 1. Go to https://www.perplexity.ai/settings/api
 2. Generate new API key (`pplx-...`)
-3. `echo 'pplx-NEW_KEY' > /data/.clawdbot/.perplexity_token && chmod 600 /data/.clawdbot/.perplexity_token`
+3. `echo 'pplx-NEW_KEY' > $SHIP_CRED_DIR/.perplexity_token && chmod 600 $SHIP_CRED_DIR/.perplexity_token`
 
 **Gotchas:**
 - Perplexity API requires a paid subscription (Pro or API plan)
@@ -136,16 +136,16 @@ cat /data/.clawdbot/.linear_webhook_secret
 
 ### 7. `.twilio_sid` + `.twilio_token` — Twilio Credentials
 
-**Location:** `/data/.clawdbot/.twilio_sid` and `/data/.clawdbot/.twilio_token`  
+**Location:** `$SHIP_CRED_DIR/.twilio_sid` and `$SHIP_CRED_DIR/.twilio_token`  
 **Used by:** Wake-up calls, SMS notifications  
-**Who fixes:** 🧑 Max (Twilio account access)  
+**Who fixes:** 🧑 User (Twilio account access)  
 **Check:** Run `check_all.py --only twilio`
 
 **Regenerate:**
 1. Go to https://console.twilio.com/
 2. Find "Account SID" and "Auth Token" on the dashboard
-3. `echo 'ACxxxxxxxxxxxxx' > /data/.clawdbot/.twilio_sid && chmod 600 /data/.clawdbot/.twilio_sid`
-4. `echo 'your_auth_token' > /data/.clawdbot/.twilio_token && chmod 600 /data/.clawdbot/.twilio_token`
+3. `echo 'ACxxxxxxxxxxxxx' > $SHIP_CRED_DIR/.twilio_sid && chmod 600 $SHIP_CRED_DIR/.twilio_sid`
+4. `echo 'your_auth_token' > $SHIP_CRED_DIR/.twilio_token && chmod 600 $SHIP_CRED_DIR/.twilio_token`
 
 **Gotchas:**
 - Auth token can be rotated in the console — rotate only if compromised
@@ -156,20 +156,20 @@ cat /data/.clawdbot/.linear_webhook_secret
 
 ### 8. `.google_analytics_token.json` — Google OAuth Token
 
-**Location:** `/data/.clawdbot/.google_analytics_token.json`  
+**Location:** `$SHIP_CRED_DIR/.google_analytics_token.json`  
 **Used by:** `tools/gcal.py`, `tools/gdrive.py`, GA4 analytics collection, GSC  
-**Who fixes:** 🧑 Max (interactive browser OAuth required)  
-**Check:** `cat /data/.clawdbot/.google_analytics_token.json | python3 -c "import sys,json; d=json.load(sys.stdin); print('OK' if 'refresh_token' in d else 'MISSING refresh_token')"`
+**Who fixes:** 🧑 User (interactive browser OAuth required)  
+**Check:** `cat $SHIP_CRED_DIR/.google_analytics_token.json | python3 -c "import sys,json; d=json.load(sys.stdin); print('OK' if 'refresh_token' in d else 'MISSING refresh_token')"`
 
 **Regenerate:**
 ```bash
-# Max must run interactively (opens browser):
+# User must run interactively (opens browser):
 gog auth login --account YOUR_GOOGLE_EMAIL
 ```
 
 **Gotchas:**
 - ⚠️ **Container reprovision loses gog auth** — this is the most commonly broken credential
-- After any container reprovision, Max must re-run `gog auth login`
+- After any container reprovision, the user must re-run `gog auth login`
 - The token file is symlinked by gog — don't move or rename it
 - Multiple Google accounts: use `--account [REDACTED_EMAIL]` flag
 - Refresh tokens expire if unused for 6 months or if OAuth consent is revoked
@@ -178,15 +178,15 @@ gog auth login --account YOUR_GOOGLE_EMAIL
 
 ### 9. `.manychat_token` — ManyChat API Token
 
-**Location:** `/data/.clawdbot/.manychat_token`  
+**Location:** `$SHIP_CRED_DIR/.manychat_token`  
 **Used by:** ManyChat automation, subscriber management  
-**Who fixes:** 🧑 Max (ManyChat account access)  
+**Who fixes:** 🧑 User (ManyChat account access)  
 **Check:** Run `check_all.py --only manychat`
 
 **Regenerate:**
 1. Go to https://manychat.com/settings/api
 2. Generate a new API token
-3. `echo 'NEW_TOKEN' > /data/.clawdbot/.manychat_token && chmod 600 /data/.clawdbot/.manychat_token`
+3. `echo 'NEW_TOKEN' > $SHIP_CRED_DIR/.manychat_token && chmod 600 $SHIP_CRED_DIR/.manychat_token`
 
 **Gotchas:**
 - ManyChat tokens are tied to a specific page/account
@@ -196,16 +196,16 @@ gog auth login --account YOUR_GOOGLE_EMAIL
 
 ### 10. `cookies/youtube.txt` — YouTube Session Cookies
 
-**Location:** `/data/.clawdbot/cookies/youtube.txt`  
+**Location:** `$SHIP_CRED_DIR/cookies/youtube.txt`  
 **Used by:** yt-dlp for authenticated YouTube downloads (age-restricted, private, membership)  
-**Who fixes:** 🧑 Max (requires logged-in browser session)  
-**Check:** `wc -l /data/.clawdbot/cookies/youtube.txt`
+**Who fixes:** 🧑 User (requires logged-in browser session)  
+**Check:** `wc -l $SHIP_CRED_DIR/cookies/youtube.txt`
 
 **Regenerate:**
 1. Install browser extension: "Get cookies.txt LOCALLY" (Chrome/Firefox)
 2. Log into YouTube in the browser
 3. Click the extension → Export cookies for youtube.com
-4. Save to `/data/.clawdbot/cookies/youtube.txt`
+4. Save to `$SHIP_CRED_DIR/cookies/youtube.txt`
 5. Verify Netscape cookie format (starts with `# Netscape HTTP Cookie File`)
 
 **Gotchas:**
@@ -219,7 +219,7 @@ gog auth login --account YOUR_GOOGLE_EMAIL
 
 **Location:** `openclaw.json` → `env.vars.OPENAI_API_KEY` (also in shell env)  
 **Used by:** OpenAI completions, embeddings, via OpenClaw and tools  
-**Who fixes:** 🧑 Max (billing account access), 🤖 Neo (can update the config file)  
+**Who fixes:** 🧑 User (billing account access), 🤖 Agent (can update the config file)  
 **Check:** Run `check_all.py --only openai`
 
 **Regenerate:**
@@ -237,16 +237,16 @@ gog auth login --account YOUR_GOOGLE_EMAIL
 
 ### 12. xAI API Key — `XAI_API_KEY`
 
-**Location:** `openclaw.json` → `env.vars.XAI_API_KEY` or `/data/.clawdbot/.xai_token`  
+**Location:** `openclaw.json` → `env.vars.XAI_API_KEY` or `$SHIP_CRED_DIR/.xai_token`  
 **Used by:** Grok model access via xAI API  
-**Who fixes:** 🧑 Max (xAI account), 🤖 Neo (can update files)  
+**Who fixes:** 🧑 User (xAI account), 🤖 Agent (can update files)  
 **Check:** Run `check_all.py --only xai`
 
 **Regenerate:**
 1. Go to https://console.x.ai/
 2. API Keys → Create new key
 3. Update `openclaw.json` env.vars.XAI_API_KEY or:
-4. `echo 'xai-NEW_KEY' > /data/.clawdbot/.xai_token`
+4. `echo 'xai-NEW_KEY' > $SHIP_CRED_DIR/.xai_token`
 
 **Gotchas:**
 - xAI API is in early access — availability may change
@@ -258,7 +258,7 @@ gog auth login --account YOUR_GOOGLE_EMAIL
 
 **Location:** `openclaw.json` → `channels.telegram.botToken`  
 **Used by:** All Telegram messaging — this is the core communication channel  
-**Who fixes:** 🧑 Max (Telegram account, @BotFather)  
+**Who fixes:** 🧑 User (Telegram account, @BotFather)  
 **Check:** Run `check_all.py --only telegram`
 
 **Regenerate:**
@@ -280,7 +280,7 @@ gog auth login --account YOUR_GOOGLE_EMAIL
 ### Google OAuth (gog CLI)
 
 **Check:** `gog auth list`
-**Who fixes:** 🧑 Max
+**Who fixes:** 🧑 User
 
 ```bash
 # Re-authenticate:
@@ -293,22 +293,22 @@ gog auth list
 gog auth logout --account YOUR_GOOGLE_EMAIL
 ```
 
-**⚠️ Gotcha:** Lost on every container reprovision. Max must re-run after each reprovision. Consider adding to workspace setup checklist.
+**⚠️ Gotcha:** Lost on every container reprovision. Re-run after each reprovision; add to your workspace setup checklist.
 
 ---
 
 ### GitHub CLI (`gh`)
 
 **Check:** `gh auth status`  
-**Who fixes:** 🤖 Neo (if `.github_token` is valid)  
+**Who fixes:** 🤖 Agent (if `.github_token` is valid)  
 
 ```bash
 # Auth using existing token file:
-export GH_TOKEN=$(cat /data/.clawdbot/.github_token)
+export GH_TOKEN=$(cat $SHIP_CRED_DIR/.github_token)
 gh auth status
 
 # Or interactive login:
-gh auth login --with-token < /data/.clawdbot/.github_token
+gh auth login --with-token < $SHIP_CRED_DIR/.github_token
 ```
 
 ---
@@ -317,7 +317,7 @@ gh auth login --with-token < /data/.clawdbot/.github_token
 
 **Location:** `data/crm.db`  
 **Check:** `python3 tools/crm.py stats`  
-**Who fixes:** 🤖 Neo  
+**Who fixes:** 🤖 Agent  
 
 ```bash
 # Initialize/rebuild:
@@ -334,7 +334,7 @@ sqlite3 data/crm.db ".schema"
 
 **Location:** Varies — check `tools/finance-v2.py` for DB_PATH  
 **Check:** `python3 tools/finance-v2.py stats`  
-**Who fixes:** 🤖 Neo  
+**Who fixes:** 🤖 Agent  
 
 ```bash
 # Scan for transactions:
@@ -348,7 +348,7 @@ python3 tools/finance-v2.py stats
 
 **Location:** `data/analytics.db`  
 **Check:** `sqlite3 data/analytics.db ".tables"`  
-**Who fixes:** 🤖 Neo  
+**Who fixes:** 🤖 Agent  
 
 ```bash
 # Collect new data:
@@ -365,7 +365,7 @@ sqlite3 data/analytics.db "SELECT COUNT(*) FROM pageviews" 2>/dev/null
 
 **Location:** `data/search.db`  
 **Check:** `sqlite3 data/search.db ".tables"`  
-**Who fixes:** 🤖 Neo  
+**Who fixes:** 🤖 Agent  
 
 ```bash
 # Rebuild index:
@@ -380,7 +380,7 @@ python3 tools/content-pipeline-search.py rebuild
 
 **Location:** `data/research-queue.db`  
 **Check:** `python3 tools/research-queue.py status`  
-**Who fixes:** 🤖 Neo  
+**Who fixes:** 🤖 Agent  
 
 ```bash
 # Check queue:
@@ -398,7 +398,7 @@ python3 tools/research-queue.py process
 ### yt-dlp
 
 **Check:** `yt-dlp --version`  
-**Who fixes:** 🤖 Neo  
+**Who fixes:** 🤖 Agent  
 
 ```bash
 # Install:
@@ -413,7 +413,7 @@ chmod +x /usr/local/bin/yt-dlp
 yt-dlp -U
 
 # Test with cookies:
-yt-dlp --cookies /data/.clawdbot/cookies/youtube.txt "https://www.youtube.com/watch?v=dQw4w9WgXcQ" --print title
+yt-dlp --cookies $SHIP_CRED_DIR/cookies/youtube.txt "https://www.youtube.com/watch?v=dQw4w9WgXcQ" --print title
 ```
 
 ---
@@ -429,7 +429,7 @@ After a container reprovision, you lose:
 You keep:
 - Everything in `/data/` (persistent volume)
 - `openclaw.json` config
-- All credential files in `/data/.clawdbot/`
+- All credential files in `$SHIP_CRED_DIR/`
 
 ### "Token worked yesterday, broken today"
 Likely causes:
@@ -440,17 +440,17 @@ Likely causes:
 ### "Symlinks broken after git operations"
 Some tools use symlinks. After git ops:
 ```bash
-ls -la /data/.clawdbot/ | grep "^l"  # Check for broken symlinks
+ls -la $SHIP_CRED_DIR/ | grep "^l"  # Check for broken symlinks
 ```
 
 ### "API key works in curl but not in tool"
 Check for:
-- Trailing newlines in token files: `cat -A /data/.clawdbot/.token | tail -1`
+- Trailing newlines in token files: `cat -A $SHIP_CRED_DIR/.token | tail -1`
 - Wrong env var name in tool code
 - Tool reading from wrong location
 
 Fix trailing newlines:
 ```bash
 # Most credential files are written correctly, but to check:
-python3 -c "t=open('/data/.clawdbot/.github_token').read(); print(repr(t[-3:]))"
+python3 -c "t=open('$SHIP_CRED_DIR/.github_token').read(); print(repr(t[-3:]))"
 ```

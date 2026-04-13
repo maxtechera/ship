@@ -19,7 +19,17 @@ BOLD="\033[1m"
 DIM="\033[2m"
 RESET="\033[0m"
 
-CLAW_DIR="${OPENCLAW_CRED_DIR:-$HOME/.clawdbot}"
+_resolve_cred_dir() {
+  # Precedence: $SHIP_CRED_DIR → $OPENCLAW_CRED_DIR → /data/.clawdbot →
+  # ~/.clawdbot → ~/.config/ship/credentials
+  if [ -n "${SHIP_CRED_DIR:-}" ]; then echo "$SHIP_CRED_DIR"; return; fi
+  if [ -n "${OPENCLAW_CRED_DIR:-}" ]; then echo "$OPENCLAW_CRED_DIR"; return; fi
+  if [ -d "/data/.clawdbot" ]; then echo "/data/.clawdbot"; return; fi
+  if [ -d "$HOME/.clawdbot" ]; then echo "$HOME/.clawdbot"; return; fi
+  echo "$HOME/.config/ship/credentials"
+}
+CRED_DIR="$(_resolve_cred_dir)"
+CLAW_DIR="$CRED_DIR"  # backward-compat alias
 
 # ── Helper: read token from env or file ──
 _token() {

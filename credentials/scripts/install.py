@@ -113,15 +113,26 @@ REGISTRY = [
      "Google OAuth CLI (Gmail, Calendar, Drive, Sheets, Contacts)", "google"),
 
     # ── Credential directory ──
-    ("~/.clawdbot",  None,           None,
+    ("cred-dir",     None,           None,
      "Credential store directory", "setup"),
 ]
 
 
+def _cred_dir() -> Path:
+    for env in ("SHIP_CRED_DIR", "OPENCLAW_CRED_DIR"):
+        explicit = os.environ.get(env)
+        if explicit:
+            return Path(explicit).expanduser()
+    for legacy in (Path("/data/.clawdbot"), Path.home() / ".clawdbot"):
+        if legacy.exists():
+            return legacy
+    return Path.home() / ".config" / "ship" / "credentials"
+
+
 def check_item(name, check_cmd):
     """Return True if installed/exists."""
-    if name == "~/.clawdbot":
-        return Path.home().joinpath(".clawdbot").exists()
+    if name == "cred-dir":
+        return _cred_dir().exists()
     if check_cmd:
         return is_installed(check_cmd)
     return False
@@ -129,11 +140,11 @@ def check_item(name, check_cmd):
 
 def install_item(name, install_cmd) -> bool:
     """Install a single item. Returns True on success."""
-    if name == "~/.clawdbot":
-        claw = Path.home() / ".clawdbot"
-        claw.mkdir(mode=0o700, exist_ok=True)
-        (claw / "cookies").mkdir(mode=0o700, exist_ok=True)
-        print(f"  {OK} Created {claw} (mode 700)")
+    if name == "cred-dir":
+        cred = _cred_dir()
+        cred.mkdir(mode=0o700, parents=True, exist_ok=True)
+        (cred / "cookies").mkdir(mode=0o700, exist_ok=True)
+        print(f"  {OK} Created {cred} (mode 700)")
         return True
 
     if not install_cmd:

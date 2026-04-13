@@ -38,10 +38,17 @@ jobs:
             python3 credentials/scripts/check_local.py --help
           fi
 
-      - name: No private-path leak in core code
+      - name: No private-identifier leak in core code
         run: |
           set -e
-          ! grep -rE '/Users/max/|/data/\.clawdbot|lastrev|kumello|alphaclaw' credentials/ --include='*.py' --include='*.sh' --include='*.md' --include='*.yml' 2>/dev/null | grep -v 'docs/extensions/' || {
-            echo "FOUND private-path leak in core — move workspace-specific content to docs/extensions/"
+          # /data/.clawdbot is a documented legacy fallback and is allowed.
+          # Flag only user/workspace-specific identifiers that shouldn't be in
+          # core opensource code.
+          leak=$(grep -rnE '/Users/max/|lastrev|kumello|alphaclaw|theanswer|last-rev-llc' \
+            --include='*.py' --include='*.sh' --include='*.md' --include='*.yml' \
+            credentials/ 2>/dev/null || true)
+          if [ -n "$leak" ]; then
+            echo "FOUND private-identifier leak — move workspace-specific content to docs/extensions/:"
+            echo "$leak"
             exit 1
-          }
+          fi

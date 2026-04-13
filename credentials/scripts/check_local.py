@@ -2,9 +2,12 @@
 """
 credentials/scripts/check_local.py
 
-Local Mac credential & CLI health check.
-Uses the same credential registry as OpenClaw (tools/lib/config.py) with
-platform-aware defaults (~/.clawdbot on Mac, /data/.clawdbot on container).
+Local credential & CLI health check for Claude Code, OpenCode, Gemini CLI, and
+OpenClaw workspaces.
+
+Credentials live in a directory selected by (first hit wins):
+  $SHIP_CRED_DIR · $OPENCLAW_CRED_DIR · /data/.clawdbot · ~/.clawdbot
+  · ~/.config/ship/credentials (default)
 
 Usage:
   python3 check_local.py                  # Full check
@@ -28,17 +31,25 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-# ─── Platform-aware credential directory ─────────────────────────────────────
+# ─── Credential directory resolution ─────────────────────────────────────────
+#
+# Precedence: $SHIP_CRED_DIR → $OPENCLAW_CRED_DIR (legacy alias) →
+#             /data/.clawdbot (OpenClaw container) → ~/.clawdbot (legacy Mac) →
+#             ~/.config/ship/credentials (default; auto-created on first write)
 
-def _default_claw_dir():
-    explicit = os.environ.get("OPENCLAW_CRED_DIR")
-    if explicit:
-        return explicit
-    if Path("/data/.clawdbot").exists():
-        return "/data/.clawdbot"
-    return str(Path.home() / ".clawdbot")
+def _default_cred_dir():
+    for env in ("SHIP_CRED_DIR", "OPENCLAW_CRED_DIR"):
+        explicit = os.environ.get(env)
+        if explicit:
+            return explicit
+    for legacy in ("/data/.clawdbot", str(Path.home() / ".clawdbot")):
+        if Path(legacy).exists():
+            return legacy
+    return str(Path.home() / ".config" / "ship" / "credentials")
 
-CLAW_DIR = _default_claw_dir()
+CRED_DIR = _default_cred_dir()
+# Backward-compat alias used throughout this file.
+CLAW_DIR = CRED_DIR
 
 # ─── Credential registry (mirrors tools/lib/config.py) ──────────────────────
 
