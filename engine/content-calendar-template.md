@@ -4,7 +4,7 @@
 > **Created:** 2026-02-26  
 > **Ticket:** NEO-216  
 > **Consumed by:** Ship Engine STRATEGY stage · All content agents  
-> **Brand Voice:** See `skills/ship-engine/brand-voice-guide.md`
+> **Brand Voice:** See `skills/engine/brand-voice-guide.md`
 
 ---
 

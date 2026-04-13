@@ -1,9 +1,9 @@
 # Prompt: Content Calendar Auto-Fill — Conta.uy
 
 > **Use case:** Auto-generate a full month's content calendar for Conta.uy given a theme and compliance dates.  
-> **Output:** Filled version of `skills/ship-engine/content-calendar-template.md`  
+> **Output:** Filled version of `skills/engine/content-calendar-template.md`  
 > **Consumed by:** Ship Engine STRATEGY stage, content-calendar agent  
-> **Reference:** `skills/ship-engine/brand-voice-guide.md` + `skills/ship-engine/content-calendar-template.md`
+> **Reference:** `skills/engine/brand-voice-guide.md` + `skills/engine/content-calendar-template.md`
 
 ---
 

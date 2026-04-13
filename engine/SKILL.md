@@ -1,5 +1,5 @@
 ---
-name: ship-engine
+name: ship
 version: "0.2.0"
 description: End-to-end GTM automation engine. Validate → Strategy → Awareness → Lead Capture → Nurture → Closing → Launch → Measure.
 user-invocable: false
@@ -25,7 +25,7 @@ metadata:
 
 > ⚠️ **[IDEATION CANON + COMPATIBILITY LAYER]** `WORKFLOW.md` is canonical for runtime flow, but this file is preserved as the full ideation and user-intent record. Treat it as: (1) why the system exists, (2) historical constraints and requests, (3) compatibility notes that map legacy concepts to the current skill/automation structure.
 
-# Ship Engine ⚡🚢
+# Ship ⚡🚢
 
 End-to-end shipping automation. Idea → validated → built → marketed → sold → measured → iterated.
 
@@ -492,7 +492,7 @@ When a signal crosses threshold:
 - "Park It" → goes to Idea Parking Lot (see below)
 
 ### Idea Parking Lot
-Ideas that score 3.0-4.0 (EXPLORE) or get "Park It" from Max are stored in `skills/ship-engine/parking-lot.md`:
+Ideas that score 3.0-4.0 (EXPLORE) or get "Park It" from Max are stored in `skills/engine/parking-lot.md`:
 - Idea name, original signal, date parked, reason
 - **Revisit trigger**: Every 30 days, scan parking lot against new signals. If an idea accumulates 3+ new signals since parking, resurface to Max.
 - Ideas that sit 90 days with no new signals → archive
@@ -1988,7 +1988,7 @@ The Ship Engine **gets smarter with every run.** Each completed or killed run fe
 
 ### LEARNINGS.md
 
-`skills/ship-engine/LEARNINGS.md` is the engine's institutional memory.
+`skills/engine/LEARNINGS.md` is the engine's institutional memory.
 
 **After every run completes (Done or Killed), the engine appends:**
 
@@ -2114,7 +2114,7 @@ The Ship Engine communicates through **whatever channels are available** via Ope
 ## File Structure
 
 ```
-skills/ship-engine/
+skills/engine/
 ├── SKILL.md                        # This file (the spec — evolves over time)
 ├── LEARNINGS.md                    # Institutional memory (grows with every run)
 ├── parking-lot.md                  # Parked ideas awaiting new signals

@@ -251,7 +251,7 @@ Configure in `engine.py` config or state file. Commands and approval buttons ada
 
 After each run completes (success or kill):
 1. Extract lessons: what worked, what didn't, actual vs estimated timelines
-2. Append to `skills/ship-engine/LEARNINGS.md`
+2. Append to `skills/engine/LEARNINGS.md`
 3. Future Strategy stages load LEARNINGS.md as context
 4. Scoring calibration: compare Validate predictions vs Measure actuals
 

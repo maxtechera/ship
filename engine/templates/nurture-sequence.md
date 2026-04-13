@@ -1,8 +1,8 @@
 # Nurture Sequence: {name}
 
 > **Related templates (required before sequence setup):**
-> - `skills/ship-engine/templates/segment-definitions.md` — subscriber segments + engagement scoring
-> - `skills/ship-engine/templates/behavioral-triggers.md` — trigger map + drip automation wiring
+> - `skills/engine/templates/segment-definitions.md` — subscriber segments + engagement scoring
+> - `skills/engine/templates/behavioral-triggers.md` — trigger map + drip automation wiring
 
 ## Email Automation
 

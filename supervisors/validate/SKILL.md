@@ -8,7 +8,7 @@ description: Own Stages 2-3 (Validate + Post-Validation gate). Produces Validati
 Own Stage 2 (VALIDATE) and Stage 3 (Post-Validation approval gate). The output is an intelligence package that downstream stages reuse verbatim.
 
 ## Shared Contracts (DRY)
-Follow canonical contracts in `openclaw-config/skills/ship-engine/WORKFLOW.md`:
+Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Gate Prefill Requirement (Max-Facing)`
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`

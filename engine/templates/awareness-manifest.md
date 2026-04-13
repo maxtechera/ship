@@ -201,9 +201,9 @@ Agent determines post count based on SEO opportunity and ICP channel fit. Below 
 One source content piece adapted for all platforms. Created once, formatted per platform.
 
 **Persona callout source-of-truth (required):**
-- `openclaw-config/skills/ship-engine/templates/persona-hook-library.md`
-- `openclaw-config/skills/ship-engine/templates/meta-persona-callouts-playbook.md`
-- `openclaw-config/skills/ship-engine/templates/meta-persona-callouts-pack.md`
+- `openclaw-config/skills/engine/templates/persona-hook-library.md`
+- `openclaw-config/skills/engine/templates/meta-persona-callouts-playbook.md`
+- `openclaw-config/skills/engine/templates/meta-persona-callouts-pack.md`
 
 | Persona artifact | Status | Link | Notes |
 |------------------|--------|------|-------|

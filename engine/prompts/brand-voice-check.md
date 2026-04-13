@@ -2,7 +2,7 @@
 
 > **Use case:** Pass any draft content through this prompt to validate it against the Conta.uy Brand Voice Guide before publishing.  
 > **Consumed by:** All content agents (copy, blog, email, social), QA stage  
-> **Reference:** `skills/ship-engine/brand-voice-guide.md`
+> **Reference:** `skills/engine/brand-voice-guide.md`
 
 ---
 

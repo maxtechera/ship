@@ -45,7 +45,7 @@ Before the first real run, a full review of the spec, templates, intake script, 
 ### External State Dependencies
 - Drive folder structure per run (`Ship Engine / {name} /` with 11 subdirectories) assumes Google Drive integration is wired up. It's available via `gog` but folder creation automation doesn't exist.
 - Figma project per run assumes Figma API access — not configured anywhere.
-- **Pragmatic alternative:** Use the workspace filesystem (`skills/ship-engine/runs/{ticket-id}/`) as primary artifact storage. Drive/Figma as optional enhancements when available.
+- **Pragmatic alternative:** Use the workspace filesystem (`skills/engine/runs/{ticket-id}/`) as primary artifact storage. Drive/Figma as optional enhancements when available.
 
 ### Validation Framework Is Standalone-Valuable
 - The 5-level validation process (Pain Discovery → Demand Quantification → Willingness to Pay → Audience-Market Fit → Score Card) is the most immediately useful piece of the entire engine.
@@ -74,4 +74,4 @@ Before the first real run, a full review of the spec, templates, intake script, 
 - The massive checklist may overwhelm sub-agents — consider a "minimum viable checklist" variant for v1 runs.
 
 ### Nested Skill Directory
-- There's a duplicate `skills/ship-engine/ship-engine/` directory with its own SKILL.md and templates — likely a copy artifact. Should be cleaned up to avoid confusion about which is authoritative.
+- There's a duplicate `skills/engine/engine/` directory with its own SKILL.md and templates — likely a copy artifact. Should be cleaned up to avoid confusion about which is authoritative.

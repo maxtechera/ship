@@ -109,7 +109,7 @@ Meta Ads spend must be tracked separately. If `utm_medium=paid` is missing from 
 - [ ] MailerLite UTM click data reconciled with GA4 sessions
 - [ ] Paid channel spend vs revenue ROI computed
 - [ ] Dark traffic % < 20% (if higher, investigate referrer data)
-- [ ] Top 3 converting assets archived to `skills/ship-engine/templates/voc-bank.md`
+- [ ] Top 3 converting assets archived to `skills/engine/templates/voc-bank.md`
 
 ---
 

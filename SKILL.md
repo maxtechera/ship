@@ -23,7 +23,7 @@ metadata:
     primaryEnv: ""
     files:
       - "credentials/registry/core.yml"
-      - "ship-engine/WORKFLOW.md"
+      - "engine/WORKFLOW.md"
     tags:
       - credentials
       - preflight
@@ -41,7 +41,7 @@ Credentials preflight and GTM pipeline for AI agents. Part of the maxtechera ski
 ## Sub-skills
 
 - **[credentials](credentials/SKILL.md)** — health-check, install, and auth wizard for 30+ CLIs and API tokens. Run before every deploy.
-- **[ship-engine](ship-engine/SKILL.md)** — full idea → validate → strategy → awareness → lead-capture → nurture → closing → launch → measure pipeline.
+- **[engine](engine/SKILL.md)** — full idea → validate → strategy → awareness → lead-capture → nurture → closing → launch → measure pipeline.
 - **[supervisors/engine](supervisors/engine/SKILL.md)** — always-on control loop. Reconciles Linear run tickets, delegates to stage supervisors, enforces critic gates.
 
 ## Team Credential Gate

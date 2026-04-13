@@ -1,7 +1,7 @@
 # Meta Persona Callouts Playbook: {product_name}
 
 > Execution guide for translating the Ship Engine persona hook library into Meta creatives.
-> Source of truth: `openclaw-config/skills/ship-engine/templates/persona-hook-library.md`
+> Source of truth: `openclaw-config/skills/engine/templates/persona-hook-library.md`
 
 ## Input Contract
 - Persona and hook definitions must come from the persona hook library.

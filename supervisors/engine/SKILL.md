@@ -18,10 +18,10 @@ Each wake executes ONE safe cycle (bounded work) and then exits.
 ## Inputs
 - Linear is the system of record for work: ticket descriptions + comments + attachments
 - Orchestrator contract: `https://github.com/maxtechera/orchestrator/blob/main/SKILL.md`
-- Canonical workflow: `ship-engine/WORKFLOW.md`
+- Canonical workflow: `engine/WORKFLOW.md`
 
 ## Shared Contracts (DRY)
-Use canonical definitions from `ship-engine/WORKFLOW.md`:
+Use canonical definitions from `engine/WORKFLOW.md`:
 - `Gate Prefill Requirement (Max-Facing)`
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`

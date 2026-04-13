@@ -6,10 +6,9 @@
 
 ship-engine GTM pipeline migrated from private workspace.
 
-- `ship-engine/` — full 8-stage GTM pipeline: validate → strategy → awareness → lead-capture → nurture → closing → launch → measure
-- `ship-engine/engine.py` — Linear run management, stage transitions, talent tickets, lesson extraction
-- `ship-engine/approval_queue.py` — content approval workflow (Telegram + Linear inline buttons, batch + daily digest)
-- `ship-engine/WORKFLOW.md` — canonical pipeline spec (decisions, gate logic, blackboard protocol)
+- `engine/` — full 8-stage GTM pipeline: validate → strategy → awareness → lead-capture → nurture → closing → launch → measure
+- `engine/SKILL.md` — ship skill definition (name: ship, triggers, metadata)
+- `engine/WORKFLOW.md` — canonical pipeline spec (decisions, gate logic, blackboard protocol)
 - `supervisors/` — 10 supervisor SKILL.md files (engine + 9 stage supervisors)
 - All hardcoded `/data/` paths replaced with env-var-first lookups (`LINEAR_API_KEY`, `SHIP_RUNS_DIR`, `CLAWDBOT_DIR`, etc.)
 - `.env.example` added for all configurable variables

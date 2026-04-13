@@ -8,7 +8,7 @@ description: Own Stage 8 (Measure). Produces performance reports, compares again
 Own Stage 8 (MEASURE). Measurement is a deliverable, not a dashboard screenshot.
 
 ## Shared Contracts (DRY)
-Follow canonical contracts in `openclaw-config/skills/ship-engine/WORKFLOW.md`:
+Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Gate Prefill Requirement (Max-Facing)`
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`

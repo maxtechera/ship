@@ -8,7 +8,7 @@ description: Own Awareness workstream deliverables (Stage 5A). Produces deployab
 Own Awareness deliverables during Stage 5 (Parallel Execution).
 
 ## Shared Contracts (DRY)
-Follow canonical contracts in `openclaw-config/skills/ship-engine/WORKFLOW.md`:
+Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Gate Prefill Requirement (Max-Facing)`
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`
@@ -28,8 +28,8 @@ Follow canonical contracts in `openclaw-config/skills/ship-engine/WORKFLOW.md`:
 - [ ] Content waterfall bundle drafted + scheduled (10+ derivatives) linked
 
 Reference manifests/templates:
-- `skills/ship-engine/templates/b-roll-capture.md`
-- `skills/ship-engine/templates/awareness-manifest.md`
+- `skills/engine/templates/b-roll-capture.md`
+- `skills/engine/templates/awareness-manifest.md`
 
 ## Verification
 - Landing page: mobile + desktop screenshots; OG preview looks correct

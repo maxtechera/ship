@@ -6,9 +6,9 @@
 
 | Artifact | Canonical path | Purpose | Status |
 |----------|----------------|---------|--------|
-| Persona hook library | `openclaw-config/skills/ship-engine/templates/persona-hook-library.md` | Shared organic + paid hook definitions | ⬜ |
-| Meta playbook | `openclaw-config/skills/ship-engine/templates/meta-persona-callouts-playbook.md` | Lane-specific creative execution rules | ⬜ |
-| Callouts pack (this file) | `openclaw-config/skills/ship-engine/templates/meta-persona-callouts-pack.md` | Launch-ready matrix + reporting split | ⬜ |
+| Persona hook library | `openclaw-config/skills/engine/templates/persona-hook-library.md` | Shared organic + paid hook definitions | ⬜ |
+| Meta playbook | `openclaw-config/skills/engine/templates/meta-persona-callouts-playbook.md` | Lane-specific creative execution rules | ⬜ |
+| Callouts pack (this file) | `openclaw-config/skills/engine/templates/meta-persona-callouts-pack.md` | Launch-ready matrix + reporting split | ⬜ |
 
 ## Active Avatar + Hook Selection
 

@@ -17,7 +17,7 @@
     },
     {
       "name": "Ship Runs Directory",
-      "description": "Where ship-engine stores active run state (default: ship-engine/runs/)",
+      "description": "Where ship-engine stores active run state (default: engine/runs/)",
       "envVar": "SHIP_RUNS_DIR",
       "sensitive": false
     },

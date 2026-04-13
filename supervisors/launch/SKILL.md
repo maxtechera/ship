@@ -8,7 +8,7 @@ description: Own Stages 6-7 (Pre-Launch gate + Launch execution). Produces readi
 Own Stage 6 (Pre-Launch approval gate) and Stage 7 (LAUNCH).
 
 ## Shared Contracts (DRY)
-Follow canonical contracts in `openclaw-config/skills/ship-engine/WORKFLOW.md`:
+Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Gate Prefill Requirement (Max-Facing)`
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`

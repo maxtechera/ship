@@ -8,7 +8,7 @@ description: Own Lead Capture workstream deliverables (Stage 5B). Produces offer
 Own Lead Capture deliverables during Stage 5 (Parallel Execution).
 
 ## Shared Contracts (DRY)
-Follow canonical contracts in `openclaw-config/skills/ship-engine/WORKFLOW.md`:
+Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Gate Prefill Requirement (Max-Facing)`
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`

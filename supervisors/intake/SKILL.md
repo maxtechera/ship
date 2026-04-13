@@ -8,7 +8,7 @@ description: Own Stage 1 (Intake) deliverables for Ship Engine runs. Turns messy
 Own Stage 1 (INTAKE). Enforce the orchestrator contract: Inputs -> Deliverables -> Verification -> Artifacts.
 
 ## Shared Contracts (DRY)
-Follow canonical contracts in `openclaw-config/skills/ship-engine/WORKFLOW.md`:
+Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`
 

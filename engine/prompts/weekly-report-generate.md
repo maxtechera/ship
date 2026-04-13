@@ -183,6 +183,6 @@ When filling Section 3:
 - If W1 retention < 30%, add a ⚠️ flag and note the likely stage of churn
 
 ---
-_Prompt maintained by Ship Engine — Measure Stage. Template ref: `skills/ship-engine/templates/weekly-report.md`_
-_Attribution ref: `skills/ship-engine/templates/attribution-model.md`_
-_Cohort ref: `skills/ship-engine/templates/cohort-analysis.md`_
+_Prompt maintained by Ship Engine — Measure Stage. Template ref: `skills/engine/templates/weekly-report.md`_
+_Attribution ref: `skills/engine/templates/attribution-model.md`_
+_Cohort ref: `skills/engine/templates/cohort-analysis.md`_

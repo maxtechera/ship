@@ -2,7 +2,7 @@
 
 > ⚠️ **DEPRECATED — use `product-brief.md` instead.**
 > This template is kept for reference only. For all new Intake stage runs, use:
-> **`ship-engine/templates/product-brief.md`**
+> **`engine/templates/product-brief.md`**
 > It replaces this template with expanded sections covering current state, existing users,
 > competitor landscape, technical stack, deployment platform, and available assets.
 

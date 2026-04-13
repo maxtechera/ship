@@ -4,8 +4,8 @@
 
 | Document | Path | Purpose |
 |----------|------|---------|
-| Workflow Spec (this file) | `skills/ship-engine/WORKFLOW.md` | Canonical pipeline definition — 8 core stages + Stage 9 continuous launch/measure loop, production manifests, tool stack |
-| Skill Doc | `skills/ship-engine/SKILL.md` | Skill-level spec — Linear integration, state schema, quality gates, file structure |
+| Workflow Spec (this file) | `skills/engine/WORKFLOW.md` | Canonical pipeline definition — 8 core stages + Stage 9 continuous launch/measure loop, production manifests, tool stack |
+| Skill Doc | `skills/engine/SKILL.md` | Skill-level spec — Linear integration, state schema, quality gates, file structure |
 | **Critic Agent** | **`skills/ship-critic/SKILL.md`** | **Automated quality gate — PASS/REVISE before every gate + verified state. Invoke the `ship-critic` skill with args. Rubrics: `skills/ship-critic/rubrics/`.** |
 | Skill Review | `docs/SHIP-ENGINE-REVIEW.md` | Gap audit: spec vs code, template quality, priority recommendations |
 | Canvas UI Spec | `docs/SHIP-ENGINE-CANVAS-SPEC.md` | Canvas component spec — stage nodes, detail panels, board-card model, API contract |
@@ -103,7 +103,7 @@ This section describes the current integration surfaces in this repo and the int
 - Deliverable cards live inside stage tickets as checklists + artifacts; Stage 9 lifecycle is reflected via blackboard objects and Linear comments.
 
 Linear schema cross-reference:
-- Canonical field map and feature usage live in `ship-engine/SKILL.md` under `Linear Issue Structure & Feature Usage (Current Runtime)`.
+- Canonical field map and feature usage live in `engine/SKILL.md` under `Linear Issue Structure & Feature Usage (Current Runtime)`.
 - Use that section as the source of truth for issue attributes, comment packet fields, linkage keys, and webhook metadata.
 
 ### Linear Webhooks (Wake Triggers)
@@ -166,7 +166,7 @@ Idempotency layers (required):
 - `effect_key` (side-effect-level): dedupe external writes (e.g. `linear:comment:<ticket>:<hash>`, `linear:create_issue:<run>:<stage>`).
 
 Persistence (normative):
-- SQLite DB: `ship-engine/data/ship-engine.db` (WAL mode).
+- SQLite DB: `engine/data/ship-engine.db` (WAL mode).
 - `wake_events(event_id PRIMARY KEY, entity_key, issue_id, comment_id, source, trigger_type, payload_hash, status, first_seen_at, last_seen_at, attempt_count, next_retry_at, error)`
 - `leases(entity_key PRIMARY KEY, holder_id, lease_token, acquired_at, heartbeat_at, expires_at)`
 - Retention: keep 30 days; purge daily.
