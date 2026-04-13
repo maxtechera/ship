@@ -144,6 +144,34 @@ $SHIP_CRED_DIR/
     └── skool-cookies.json
 ```
 
+## Team Credential Profiles
+
+Different agent teams need different credentials. Declare what a team requires and validate it in one shot before spawning.
+
+**Pattern:** pass `--only` with a comma-separated list of check IDs matching your team's needs.
+
+| Team type | Required checks |
+|-----------|----------------|
+| GTM team (strategist + growth) | `github,openai,anthropic,meta_token,mailerlite,apollo` |
+| Engineering team (builder + tester) | `github,railway,vercel,supabase,openai,anthropic` |
+| Content team (strategist only) | `openai,anthropic,perplexity` |
+| Full ship-engine team | `github,railway,vercel,openai,anthropic,meta_token,mailerlite` |
+
+**Validate before TeamCreate:**
+```bash
+# Returns exit code 0 if all pass, 1 if any fail
+python3 credentials/scripts/check_local.py \
+  --only "github,railway,vercel,openai,anthropic" \
+  --quiet  # only show failures
+
+# JSON for automation (parse in Claude Code)
+python3 credentials/scripts/check_local.py \
+  --only "github,railway,vercel,openai,anthropic" \
+  --json
+```
+
+**In ship-engine LAUNCH stage:** The launch supervisor calls this before `TeamCreate`. If any token fails, the team does not spawn — fix commands are printed and the launch is blocked until credentials are clean.
+
 ## Extending
 
 Drop a `*.yml` file into `$SHIP_CRED_DIR/extensions/` (or the directory named by `$SHIP_EXTENSIONS_DIR`) to register additional checks. See [`extensions/README.md`](extensions/README.md) for the schema and [`../docs/extensions/my-service.yml.example`](../docs/extensions/my-service.yml.example) for a working sample.
