@@ -1,0 +1,47 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Python syntax check
+        run: |
+          set -e
+          for f in credentials/scripts/check_local.py credentials/scripts/check_all.py credentials/scripts/install.py credentials/scripts/refresh.py; do
+            [ -f "$f" ] || { echo "skip: $f (not yet present)"; continue; }
+            python3 -c "import ast, sys; ast.parse(open('$f').read()); print('ok: $f')"
+          done
+
+      - name: Bash syntax check
+        run: |
+          set -e
+          for f in credentials/scripts/auth.sh; do
+            [ -f "$f" ] || { echo "skip: $f (not yet present)"; continue; }
+            bash -n "$f" && echo "ok: $f"
+          done
+
+      - name: Help output smoke
+        run: |
+          if [ -f credentials/scripts/check_local.py ]; then
+            python3 credentials/scripts/check_local.py --help
+          fi
+
+      - name: No private-path leak in core code
+        run: |
+          set -e
+          ! grep -rE '/Users/max/|/data/\.clawdbot|lastrev|kumello|alphaclaw' credentials/ --include='*.py' --include='*.sh' --include='*.md' --include='*.yml' 2>/dev/null | grep -v 'docs/extensions/' || {
+            echo "FOUND private-path leak in core — move workspace-specific content to docs/extensions/"
+            exit 1
+          }

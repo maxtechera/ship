@@ -1,0 +1,19 @@
+{
+  "name": "ship",
+  "version": "0.1.0",
+  "description": "End-to-end GTM pipeline + credentials preflight. v0.1 ships the credentials health-check skill.",
+  "settings": [
+    {
+      "name": "Credentials Directory",
+      "description": "Absolute path to the directory containing your token files (default: ~/.config/ship/credentials)",
+      "envVar": "SHIP_CRED_DIR",
+      "sensitive": false
+    },
+    {
+      "name": "Credentials Extensions Directory",
+      "description": "Directory of additional YAML check definitions to merge into the core registry (default: $SHIP_CRED_DIR/extensions)",
+      "envVar": "SHIP_EXTENSIONS_DIR",
+      "sensitive": false
+    }
+  ]
+}
