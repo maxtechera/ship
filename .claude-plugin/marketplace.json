@@ -1,0 +1,23 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "ship",
+  "description": "Credentials preflight and GTM pipeline for AI agents.",
+  "owner": {
+    "name": "maxtechera",
+    "url": "https://github.com/maxtechera"
+  },
+  "plugins": [
+    {
+      "name": "ship",
+      "description": "Health-check, install, and auth wizard for 30+ CLIs and API tokens. Catches missing credentials before your deploy fails.",
+      "version": "0.1.0",
+      "author": {
+        "name": "maxtechera",
+        "url": "https://github.com/maxtechera"
+      },
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/maxtechera/ship"
+    }
+  ]
+}

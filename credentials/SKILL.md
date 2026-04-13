@@ -1,6 +1,40 @@
 ---
 name: credentials
-description: Verify, validate, and fix local credentials for CLIs and APIs. 30+ checks (runtime CLIs, CLI auth, API tokens, Google OAuth). Includes install and auth wizards. Part of the ship skill pack.
+version: "0.1.0"
+description: "Health-check, install, and auth wizard for 30+ CLIs and API tokens. Catches missing credentials before your deploy fails."
+argument-hint: ''
+allowed-tools: Bash, Read, Write
+homepage: https://github.com/maxtechera/ship
+repository: https://github.com/maxtechera/ship
+author: maxtechera
+license: MIT
+user-invocable: true
+triggers:
+  - credentials
+  - credentials check
+  - check credentials
+  - check tokens
+metadata:
+  openclaw:
+    emoji: "🔑"
+    requires:
+      env: []
+      optionalEnv:
+        - SHIP_CRED_DIR
+        - SHIP_EXTENSIONS_DIR
+      bins:
+        - python3
+    primaryEnv: ""
+    files:
+      - "scripts/*"
+    tags:
+      - credentials
+      - preflight
+      - auth
+      - cli
+      - api-token
+      - health-check
+      - deploy
 ---
 
 # Credentials

@@ -1,0 +1,7 @@
+# Exclude dev/test artifacts from ClawHub bundle
+.github/
+.DS_Store
+*.pyc
+__pycache__/
+docs/
+*.jsonl
