@@ -1,0 +1,110 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Required files present
+        run: |
+          set -e
+          for f in SKILL.md README.md LICENSE CHANGELOG.md .clawhubignore \
+                   .claude-plugin/plugin.json .claude-plugin/marketplace.json \
+                   .codex-plugin/plugin.json gemini-extension.json \
+                   credentials/SKILL.md; do
+            test -f "$f" || { echo "MISSING: $f"; exit 1; }
+            echo "ok: $f"
+          done
+
+      - name: JSON manifests parse
+        run: |
+          set -e
+          python3 -m json.tool .claude-plugin/plugin.json > /dev/null && echo "ok: plugin.json"
+          python3 -m json.tool .claude-plugin/marketplace.json > /dev/null && echo "ok: marketplace.json"
+          python3 -m json.tool .codex-plugin/plugin.json > /dev/null && echo "ok: codex plugin.json"
+          python3 -m json.tool gemini-extension.json > /dev/null && echo "ok: gemini-extension.json"
+
+      - name: Required keys in plugin.json
+        run: |
+          python3 - <<'EOF'
+          import json, sys
+          d = json.load(open('.claude-plugin/plugin.json'))
+          required = ['name', 'version', 'description', 'license', 'skills']
+          missing = [k for k in required if k not in d]
+          if missing:
+              print(f"plugin.json missing keys: {missing}"); sys.exit(1)
+          print("plugin.json keys OK")
+          EOF
+
+      - name: Version sync across manifests
+        run: |
+          python3 - <<'EOF'
+          import json, re, sys
+
+          def skill_ver():
+              with open('SKILL.md') as f:
+                  m = re.search(r'^version:\s*["\']?([0-9]+\.[0-9]+\.[0-9]+)', f.read(), re.MULTILINE)
+              if not m:
+                  print("No version in SKILL.md"); sys.exit(1)
+              return m.group(1)
+
+          sv = skill_ver()
+          pv = json.load(open('.claude-plugin/plugin.json'))['version']
+          mv = json.load(open('.claude-plugin/marketplace.json'))['plugins'][0]['version']
+          gv = json.load(open('gemini-extension.json'))['version']
+
+          errors = []
+          if pv != sv: errors.append(f"plugin.json {pv!r} != SKILL.md {sv!r}")
+          if mv != sv: errors.append(f"marketplace.json plugin version {mv!r} != SKILL.md {sv!r}")
+          if gv != sv: errors.append(f"gemini-extension.json {gv!r} != SKILL.md {sv!r}")
+
+          if errors:
+              [print(e) for e in errors]; sys.exit(1)
+          print(f"Version sync OK: {sv}")
+          EOF
+
+      - name: Python syntax check
+        run: |
+          set -e
+          for f in credentials/scripts/check_local.py credentials/scripts/check_all.py \
+                   credentials/scripts/install.py credentials/scripts/refresh.py; do
+            [ -f "$f" ] || { echo "skip: $f"; continue; }
+            python3 -c "import ast, sys; ast.parse(open('$f').read()); print('ok: $f')"
+          done
+
+      - name: Bash syntax check
+        run: |
+          set -e
+          for f in credentials/scripts/auth.sh; do
+            [ -f "$f" ] || { echo "skip: $f"; continue; }
+            bash -n "$f" && echo "ok: $f"
+          done
+
+      - name: Help output smoke
+        run: |
+          if [ -f credentials/scripts/check_local.py ]; then
+            python3 credentials/scripts/check_local.py --help
+          fi
+
+      - name: No private-identifier leak
+        run: |
+          set -e
+          leak=$(grep -rnE '/Users/max/|lastrev|kumello|alphaclaw|theanswer|last-rev-llc' \
+            --include='*.py' --include='*.sh' --include='*.md' --include='*.yml' \
+            credentials/ 2>/dev/null || true)
+          if [ -n "$leak" ]; then
+            echo "FOUND private-identifier leak:"
+            echo "$leak"
+            exit 1
+          fi
+          echo "No private identifiers found"

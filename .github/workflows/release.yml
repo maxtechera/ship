@@ -1,0 +1,91 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  validate:
+    name: Pre-release checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Distribution channel manifests present
+        run: |
+          set -e
+          for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json \
+                   .codex-plugin/plugin.json gemini-extension.json .clawhubignore; do
+            test -f "$f" || { echo "MISSING: $f"; exit 1; }
+          done
+          echo "All channel manifests present"
+
+      - name: JSON manifests parse
+        run: |
+          set -e
+          python3 -m json.tool .claude-plugin/plugin.json > /dev/null
+          python3 -m json.tool .claude-plugin/marketplace.json > /dev/null
+          python3 -m json.tool gemini-extension.json > /dev/null
+
+      - name: Tag matches SKILL.md version
+        run: |
+          python3 - <<'EOF'
+          import os, re, sys
+          tag = os.environ['GITHUB_REF_NAME'].lstrip('v')
+          with open('SKILL.md') as f:
+              m = re.search(r'^version:\s*["\']?([0-9]+\.[0-9]+\.[0-9]+)', f.read(), re.MULTILINE)
+          if not m:
+              print("No version in SKILL.md"); sys.exit(1)
+          if tag != m.group(1):
+              print(f"Tag {tag!r} != SKILL.md {m.group(1)!r}"); sys.exit(1)
+          print(f"Version OK: {tag}")
+          EOF
+
+      - name: CHANGELOG.md has entry
+        run: |
+          test -f CHANGELOG.md || { echo "CHANGELOG.md required"; exit 1; }
+          TAG="${GITHUB_REF_NAME#v}"
+          grep -q "\[$TAG\]" CHANGELOG.md || { echo "No CHANGELOG entry for $TAG"; exit 1; }
+          echo "CHANGELOG entry found for $TAG"
+
+  create-release:
+    name: GitHub Release
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract changelog entry
+        run: |
+          python3 - <<'EOF'
+          import os, re
+          version = os.environ['GITHUB_REF_NAME'].lstrip('v')
+          with open('CHANGELOG.md') as f:
+              content = f.read()
+          pattern = rf'## \[?{re.escape(version)}\]?.*?\n(.*?)(?=\n## |\Z)'
+          m = re.search(pattern, content, re.DOTALL)
+          entry = m.group(1).strip() if m else f"Release v{version}"
+          with open('/tmp/release_notes.md', 'w') as f:
+              f.write(entry)
+          EOF
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "ship $GITHUB_REF_NAME" \
+            --notes-file /tmp/release_notes.md
+
+      - name: Dispatch to aggregate registry
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/maxtechera/claude-plugins/dispatches \
+            -f event_type=skill-released \
+            -f "client_payload[skill]=${{ github.event.repository.name }}" \
+            -f "client_payload[version]=${{ github.ref_name }}" \
+            2>/dev/null || echo "Aggregate registry dispatch skipped (not configured)"
