@@ -48,29 +48,29 @@ Credentials preflight and GTM pipeline for AI agents. Part of the maxtechera ski
 
 Before spawning an agent team, validate every token the team needs:
 
-```
-Read credentials/registry/core.yml
-# Filter to required IDs, run each verify_cmd, collect failures
+```bash
+python3 credentials/scripts/check_local.py \
+  --only "github,railway,vercel,openai,anthropic" \
+  --json
 ```
 
 In Claude Code, call this before `TeamCreate`:
 
 ```
-# 1. Preflight — read registry/core.yml, run verify_cmd for each required token
-# 2. If all pass → spawn team
+# 1. Preflight — run check_local.py --only "<required-tokens>" --json
+# 2. If all pass (exit 0) → spawn team
 TeamCreate team_name="<project>"
 Agent name="builder" team_name="<project>" isolation="worktree" run_in_background=true
 ...
-# 3. If any fail → print fix_cmd for each failure, halt — do not spawn
+# 3. If any fail (exit 1) → print fix_cmd for each failure, halt
 ```
 
 This is the LAUNCH gate. Missing tokens surface before agents start, not mid-sprint.
 
 ## Quick start
 
-```
-Read credentials/registry/core.yml
-# Run each verify_cmd — report pass/fail with fix_cmd on failures
+```bash
+python3 credentials/scripts/check_local.py
 ```
 
 See [credentials/SKILL.md](credentials/SKILL.md) for full documentation.

@@ -44,27 +44,27 @@ Covers 30+ integrations out of the box — GitHub, Vercel, Railway, Render, Line
 
 ## How to Run a Credential Check
 
-Read `registry/core.yml` to see all check IDs and their verification commands. Then execute each check using Bash:
-
-```
-Read registry/core.yml
-# For each check: run the verify_cmd, capture output, report pass/fail
-```
-
-**Quick patterns:**
-
-Check all:
 ```bash
-# For each entry in registry/core.yml: run verify_cmd, collect failures
+# Check everything
+python3 credentials/scripts/check_local.py
+
+# Only failures
+python3 credentials/scripts/check_local.py --quiet
+
+# With fix commands
+python3 credentials/scripts/check_local.py --fix
+
+# Check specific services (automation-friendly)
+python3 credentials/scripts/check_local.py --only "github,railway,vercel,openai,anthropic"
+
+# JSON output for parsing in Claude Code
+python3 credentials/scripts/check_local.py --json
+
+# Check a single service
+python3 credentials/scripts/check_local.py --only google_oauth
 ```
 
-Check specific tokens only (e.g. before a GTM team spawn):
-```bash
-# Filter registry/core.yml to entries whose id matches the required list
-# Run only those verify_cmds
-```
-
-Exit 0 if all pass. Exit 1 if any fail — print the fix_cmd for each failure.
+Exit 0 if all pass. Exit 1 if any fail — prints `fix_cmd` per failure.
 
 ## What Gets Checked
 
@@ -130,11 +130,11 @@ Validate only the tokens a specific team needs before spawning it.
 
 **Pattern — credential gate before TeamCreate:**
 
-```
-# 1. Read registry/core.yml, filter to required IDs
-# 2. Run each verify_cmd
-# 3. If all pass → TeamCreate + spawn agents
-# 4. If any fail → print fix_cmd for each, halt
+```bash
+# Returns exit 0 if all pass, exit 1 if any fail
+python3 credentials/scripts/check_local.py \
+  --only "github,railway,vercel,openai,anthropic" \
+  --json
 ```
 
 This is the LAUNCH gate. Missing tokens surface before agents start, not mid-sprint.
@@ -148,6 +148,8 @@ Drop a `*.yml` file into `$SHIP_CRED_DIR/extensions/` (or `$SHIP_EXTENSIONS_DIR`
 ```
 credentials/
 ├── SKILL.md                    # this file — agent instructions
+├── scripts/
+│   └── check_local.py          # stdlib-only runner — JSON output, exit codes, --only filter
 ├── registry/
 │   └── core.yml                # declarative check index (verify_cmd, fix_cmd per service)
 ├── extensions/                 # drop your own *.yml check definitions here
