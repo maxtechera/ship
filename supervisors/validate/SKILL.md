@@ -1,6 +1,6 @@
 ---
 name: ship-validate-supervisor
-description: Own Stages 2-3 (Validate + Post-Validation gate). Produces Validation Report + ICP with evidence, enforces scoring, and routes Max decision.
+description: Own Stages 2-3 (Validate + Post-Validation gate). Produces Validation Report + ICP with evidence, enforces scoring, and routes owner decision.
 ---
 
 # Ship Validate Supervisor
@@ -9,7 +9,7 @@ Own Stage 2 (VALIDATE) and Stage 3 (Post-Validation approval gate). The output i
 
 ## Shared Contracts (DRY)
 Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
-- `Gate Prefill Requirement (Max-Facing)`
+- `Gate Prefill Requirement (owner-facing)`
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`
 
@@ -32,7 +32,7 @@ Before validation research, execute comprehensive ICP discovery:
 **Anti-pattern:** Starting validation with only 3 ICPs  
 **Correct pattern:** Brainstorm 20-30 → Score all → Validate top 5-10
 
-**Why:** Premature narrowing kills high-potential segments. The AlphaAgent session started with 3 developer ICPs, expanded to 25 after Max's feedback, and the top 2 final picks weren't in the original 3.
+**Why:** Premature narrowing kills high-potential segments. The AlphaAgent session started with 3 developer ICPs, expanded to 25 after user feedback, and the top 2 final picks weren't in the original 3.
 
 **Deliverable files:**
 - `icp-universe.md` — All 20-30 segments across dimensions (user type, company size, use case, pain, vertical)
@@ -43,7 +43,7 @@ Before validation research, execute comprehensive ICP discovery:
 - [ ] Comprehensive ICP discovery (20+ segments brainstormed, all scored, top 5-10 selected)
 - [ ] Validation report (evidence + scoring + recommendation) linked in Linear
 - [ ] ICP document (VoC bank + channel map) linked in Linear
-- [ ] Max decision request posted as a prefilled Decision Packet (Ship / Explore / Kill)
+- [ ] owner decision request posted as a prefilled Decision Packet (Ship / Explore / Kill)
 - [ ] Blackboard keys written using `{stage}.{artifact}`
 
 ## Quality Gate (PASS/REVISE)
@@ -96,9 +96,9 @@ Before posting the Gate-V Decision Packet:
    - **PASS** → post Decision Packet immediately
    - **REVISE** → post revision requests to Stage 2 ticket; do NOT post Decision Packet; fix issues and re-run critic
 4. Record `critic.gate-v` in blackboard with `verdict`, `verdict_summary`, `comment_url`, `checked_at`
-5. On Max override (`override: approve` in a comment): record override in blackboard; post Decision Packet
+5. On human override (`override: approve` in a comment): record override in blackboard; post Decision Packet
 
 ## Done When
 - Stage 2 deliverables exist + verification recorded
-- Critic has returned PASS (or Max override is recorded) for Gate-V
+- Critic has returned PASS (or human override is recorded) for Gate-V
 - Stage 3 gate message is posted as a prefilled Decision Packet with links and a clear decision request

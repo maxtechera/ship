@@ -9,7 +9,7 @@ Own Lead Capture deliverables during Stage 5 (Parallel Execution).
 
 ## Shared Contracts (DRY)
 Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
-- `Gate Prefill Requirement (Max-Facing)`
+- `Gate Prefill Requirement (owner-facing)`
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`
 

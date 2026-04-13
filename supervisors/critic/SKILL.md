@@ -149,7 +149,7 @@ Return only this markdown structure (no preamble, no sign-off):
 | Check | Result | Note |
 |-------|--------|------|
 
-#### Override (Max only — include only if REVISE)
+#### Override (human override only — include only if REVISE)
 To override, add a comment on this ticket:
 decision: approve
 override_reason: <why>

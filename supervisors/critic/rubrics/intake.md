@@ -11,7 +11,7 @@ Applies to: `intake.product_brief`, `intake.interview`, `intake.research_kickoff
 | 3 | Target user | Specific role/persona named | "Everyone" or too vague |
 | 4 | Current state | One of: idea / MVP / fully built / billing integrated | Missing |
 | 5 | Revenue model | One of: free / freemium / paid / subscription / one-time | Missing |
-| 6 | Max's angle | Brand fit + audience connection noted | Missing |
+| 6 | Founder's angle | Brand fit + audience connection noted | Missing |
 
 ## Interview + Research Kickoff Checks
 

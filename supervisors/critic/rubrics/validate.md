@@ -10,7 +10,7 @@ Applies to: `validate.validation_report`, `validate.icp`
 | 2 | Pain quotes real | ≥5 verbatim quotes with source + date | Invented or paraphrased quotes |
 | 3 | Evidence breadth | ≥3 independent source types (Reddit, X, reviews, etc.) | <3 source types |
 | 4 | Disconfirming evidence | ≥2 disconfirming signals documented | No disconfirming signals at all |
-| 5 | Behavioral evidence ratio | `behavioral_evidence_ratio` ≥50%, or confidence capped at 0.79 | Behavioral ratio <50% AND confidence >0.79 without Max override |
+| 5 | Behavioral evidence ratio | `behavioral_evidence_ratio` ≥50%, or confidence capped at 0.79 | Behavioral ratio <50% AND confidence >0.79 without human override |
 | 6 | Scoring arithmetic | Weighted scores correct; weights sum to 100% | Arithmetic error OR missing weight breakdown |
 | 7 | Score-evidence consistency | Score ≥4.0 requires ≥3 strong sources per scored dimension | Score 4+ with only 1-2 thin sources per dimension |
 | 8 | Recommendation matches score | SHIP if ≥4.0, EXPLORE if 3.0-3.9, KILL if <3.0 | Score and recommendation contradict |

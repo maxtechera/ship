@@ -9,7 +9,7 @@ Own Stage 4 (STRATEGY). Produce the Ship Plan that the 4 parallel workstreams ex
 
 ## Shared Contracts (DRY)
 Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
-- `Gate Prefill Requirement (Max-Facing)`
+- `Gate Prefill Requirement (owner-facing)`
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`
 
@@ -22,7 +22,7 @@ Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - [ ] Ship Plan doc linked in Linear
 - [ ] Parallel workstream tickets created/updated with Inputs/Deliverables/Verification/Artifacts
 - [ ] Budget + spend policy recorded
-- [ ] Strategy Lock Pack posted as a prefilled Decision Packet for Max approval (to prevent premature fanout)
+- [ ] Strategy Lock Pack posted as a prefilled Decision Packet for human approval (to prevent premature fanout)
 - [ ] Persona Callout Pack linked (library + Meta playbook + Meta pack)
 - [ ] Blackboard key `strategy.ship_plan` written
 
@@ -80,8 +80,8 @@ Before posting the Gate-S (Strategy Lock) Decision Packet:
    - **PASS** → post Strategy Lock Decision Packet
    - **REVISE** → post revision requests; do NOT post Decision Packet; fix and re-run critic
 5. Record `critic.gate-s` in blackboard with `verdict`, `verdict_summary`, `comment_url`, `checked_at`
-6. On Max override (`override: approve`): record override; post Decision Packet
+6. On human override (`override: approve`): record override; post Decision Packet
 
 ## Done When
-- Ship Plan exists, is linked, critic has returned PASS (or Max override recorded) for Gate-S
-- Strategy Lock Pack is posted, and Persona Callout Pack artifacts are attached for Max's Proceed/Revise decision
+- Ship Plan exists, is linked, critic has returned PASS (or human override recorded) for Gate-S
+- Strategy Lock Pack is posted, and Persona Callout Pack artifacts are attached for owner's Proceed/Revise decision

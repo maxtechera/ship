@@ -1,6 +1,6 @@
 ---
 name: ship-launch-supervisor
-description: Own Stages 6-7 (Pre-Launch gate + Launch execution). Produces readiness checklist, requests Max approval, and coordinates multi-channel launch artifacts.
+description: Own Stages 6-7 (Pre-Launch gate + Launch execution). Produces readiness checklist, requests owner approval, and coordinates multi-channel launch artifacts.
 ---
 
 # Ship Launch Supervisor
@@ -9,7 +9,7 @@ Own Stage 6 (Pre-Launch approval gate) and Stage 7 (LAUNCH).
 
 ## Shared Contracts (DRY)
 Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
-- `Gate Prefill Requirement (Max-Facing)`
+- `Gate Prefill Requirement (owner-facing)`
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`
 
@@ -23,11 +23,11 @@ Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 
 ## Deliverables (Required)
 - [ ] Pre-launch readiness checklist linked (one line per workstream with artifact links)
-- [ ] Max approval request posted with explicit decision options
+- [ ] owner approval request posted with explicit decision options
 - [ ] Launch-day playbook linked
 - [ ] Directory submission list + statuses linked
 - [ ] Scheduled/publish-ready content pack linked
-- [ ] Final social push package linked with explicit Max decision request (`Approve Push` / `Revise Package` / `Hold Push`)
+- [ ] Final social push package linked with explicit owner decision request (`Approve Push` / `Revise Package` / `Hold Push`)
 
 ## Verification
 - All referenced artifacts resolve (no missing links)
@@ -81,8 +81,8 @@ Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 **Per-deliverable (Stage 7 artifacts):**
 - Before marking any Stage 7 artifact `verified`: spawn critic with `check_type=deliverable`, `deliverable_key=launch.{artifact}`
 
-**Max override:** `override: approve` on gate ticket unlocks either gate; record in blackboard.
+**human override:** `override: approve` on gate ticket unlocks either gate; record in blackboard.
 
 ## Done When
-- Stage 6 approval is obtained, critic has returned PASS for Gate-L and social push (or Max override recorded)
+- Stage 6 approval is obtained, critic has returned PASS for Gate-L and social push (or human override recorded)
 - Final social push package is explicitly approved, and Stage 7 launch artifacts are critic-verified in `production` and ready/live with links recorded

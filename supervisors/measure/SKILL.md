@@ -9,7 +9,7 @@ Own Stage 8 (MEASURE). Measurement is a deliverable, not a dashboard screenshot.
 
 ## Shared Contracts (DRY)
 Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
-- `Gate Prefill Requirement (Max-Facing)`
+- `Gate Prefill Requirement (owner-facing)`
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`
 
@@ -51,7 +51,7 @@ Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
   - Include `status_summary`, `next_steps`, and `critic_verdict` in `production`
 - Linear:
   - On each meaningful update, post `status_summary` + `next_steps`
-  - For high-risk recommendation events, post a prefilled Decision Packet before requesting Max decision
+  - For high-risk recommendation events, post a prefilled Decision Packet before requesting owner decision
 
 ## Delegation Map
 - Reporting: `brand-report` skill

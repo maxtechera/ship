@@ -12,10 +12,10 @@ Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`
 
-Stage 1 does not open a Max hard gate, but it still uses the same status/writeback rules.
+Stage 1 does not open a owner hard gate, but it still uses the same status/writeback rules.
 
 ## Inputs (Required)
-- Max-provided app context (URL(s), screenshots, notes, voice msg transcript, repo link)
+- owner-provided app context (URL(s), screenshots, notes, voice msg transcript, repo link)
 - Linear run parent + Stage 1 ticket (or equivalent tracking surface)
 
 ## Deliverables (Required)
