@@ -4,6 +4,9 @@ version: "0.2.0"
 description: "GTM pipeline with team mode. /ship spawns coordinator + executor + critic team, renders live dashboard of all active runs, loops every 10m. /ship create starts a new run."
 argument-hint: 'ship (dashboard + team), ship create "<idea>", ship status, ship run <RUN-ID>'
 allowed-tools: Bash, Read, Write
+composes:
+  - orchestrator/SKILL.md
+  - memory/SKILL.md
 homepage: https://github.com/maxtechera/ship
 repository: https://github.com/maxtechera/ship
 author: maxtechera
@@ -44,6 +47,21 @@ metadata:
 Run `/ship` once. A coordinator team spawns, the dashboard renders, and work starts moving.
 
 The team reads all active ship runs from Linear, assigns stage work to the executor, sends deliverables to the critic before every gate, and keeps a live dashboard refreshing every 10 minutes. You review the critic's verdict, approve gates, and watch runs advance to Done.
+
+## Composition
+
+ship builds on orchestrator and memory. It does not re-implement agent coordination.
+
+| Layer | Owned by | What it provides |
+|-------|----------|-----------------|
+| Agent teams, TeamCreate, zero-idle, SendMessage, loop | [`orchestrator/SKILL.md`](https://github.com/maxtechera/orchestrator/blob/main/SKILL.md) | Team lifecycle, coordination |
+| Verification harness, ticket contract, critic gates | [`orchestrator/SKILL.md`](https://github.com/maxtechera/orchestrator/blob/main/SKILL.md) | Proof before done |
+| Session persistence, MEMORY.md | [`memory/SKILL.md`](https://github.com/maxtechera/memory/blob/main/SKILL.md) | Context across runs and agents |
+| GTM pipeline stages (intake → measure) | ship | Stage supervisors, blackboard contract |
+| Credential gate | ship | 30+ CLI/token checks before every deploy |
+| GTM agent roster | ship | 9 domain-specific agents + dynamic roles |
+| Content sub-skills | ship | 17 content production skills |
+| oss_tool product type | ship | OSS conversion chain (GitHub → newsletter → course) |
 
 ## Commands
 
@@ -113,7 +131,7 @@ If no active runs → print "No active ship runs. Use /ship create \"<idea>\" to
 
 ### 4. Spawn team
 
-Spawn the full pre-defined GTM team. Every role starts at boot — coordinator assigns work as stages become actionable.
+Spawn the GTM team using orchestrator Team Mode (see [orchestrator/SKILL.md §Team Mode](https://github.com/maxtechera/orchestrator/blob/main/SKILL.md)). TeamCreate + Agent spawn follow orchestrator's pattern. GTM roster:
 
 ```
 TeamCreate team_name="ship"
@@ -199,20 +217,6 @@ Agent name="analyst" team_name="ship" run_in_background=true
 
 Each tick: re-pull all data sources, re-render dashboard, identify newly actionable stages, route to correct specialist if idle. Dashboard `Team` row updates to show which agent is active.
 
-### Pre-defined team roster
-
-| Agent | Stage coverage | Isolation |
-|-------|---------------|-----------|
-| `coordinator` | All — routes + assigns | none |
-| `critic` | All gates + verified advances | none |
-| `strategist` | Intake → Validate → Strategy | none |
-| `content` | Awareness (all asset types) | none |
-| `growth` | Lead Capture (UTM, GA4, A/B) | none |
-| `nurture` | Nurture (sequences, MailerLite) | none |
-| `closer` | Closing (sales/course pages) | none |
-| `launcher` | Launch (readiness, push, directories) | none |
-| `analyst` | Measure (GA4, Stripe, scorecards) | none |
-
 **Dynamic roles** — coordinator spawns these as stage complexity demands:
 
 | Agent | When to spawn | Prompt reference |
@@ -221,10 +225,6 @@ Each tick: re-pull all data sources, re-render dashboard, identify newly actiona
 | `seo-specialist` | Run includes SEO blog deliverable | `skills/seo/SKILL.md` |
 | `outreach` | Run includes B2B cold email sequence | `skills/sales-outreach/SKILL.md` |
 | `designer` | Run requires visual asset creation (not copy) | `ship/content/skills/image/SKILL.md` |
-
-Coordinator spawns dynamic roles via `Agent name="<role>" team_name="ship" run_in_background=true` when the stage ticket specifies a deliverable that the pre-defined roster doesn't cover.
-
-**Zero-idle rule:** coordinator always has a queued secondary task for every active specialist. When a stage completes, next assignment is sent immediately — no agent ever waits.
 
 ## /ship create
 
@@ -248,7 +248,7 @@ Steps the agent follows verbatim:
 
 ## Team Credential Gate
 
-Before spawning an agent team, validate every token the team needs:
+Run before any `TeamCreate` (see orchestrator/SKILL.md for team spawn pattern):
 
 ```bash
 python3 credentials/scripts/check_local.py \
@@ -256,18 +256,7 @@ python3 credentials/scripts/check_local.py \
   --json
 ```
 
-In Claude Code, call this before `TeamCreate`:
-
-```
-# 1. Preflight — run check_local.py --only "<required-tokens>" --json
-# 2. If all pass (exit 0) → spawn team
-TeamCreate team_name="<project>"
-Agent name="builder" team_name="<project>" isolation="worktree" run_in_background=true
-...
-# 3. If any fail (exit 1) → print fix_cmd for each failure, halt
-```
-
-This is the LAUNCH gate. Missing tokens surface before agents start, not mid-sprint.
+Exit 0 → spawn team. Exit 1 → print `fix_cmd` per failure, halt. Missing tokens surface before agents start, not mid-sprint.
 
 ## Quick start
 
