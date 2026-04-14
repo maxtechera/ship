@@ -128,8 +128,13 @@ Agent name="coordinator" team_name="ship" run_in_background=true
 
 Agent name="critic" team_name="ship" run_in_background=true
   prompt: "Read supervisors/critic/SKILL.md. Receive review requests via SendMessage.
-  Never read the executor's work log — fresh context only. Return PASS/REVISE/FAIL
-  with line-level evidence. Required before every gate and every verified state advance."
+  Never read the executor's work log — fresh context only. Score on v3 rubric (100-pt,
+  10 cats x 10): brand voice, audience fit, hook strength, CTA + Hormozi two-part rule,
+  offer framing, structural, guide alignment, human-sounding (zero Tier-1 AI words),
+  format craft (platform-specific), verbatim/specificity (real numbers, no claims).
+  Threshold ≥75 APPROVE. One revise pass max — then ship, escalate to coordinator.
+  When measure-analyst Stream-2 avg ≥7 and band mid/high: cat #3 = Stream-2 score ±1
+  (do not re-score independently). Required before every gate and every verified state advance."
 
 # ── GTM specialists ───────────────────────────────────────────
 
@@ -172,10 +177,18 @@ Agent name="launcher" team_name="ship" run_in_background=true
   before any deploy action — exit 1 halts launch. Posts launch package to coordinator."
 
 Agent name="analyst" team_name="ship" run_in_background=true
-  prompt: "Metrics + analytics specialist. Handles: GA4 event verification, Stripe revenue
-  pull, KPI scorecards, conversion rate calculation, MoM delta. Reads
-  supervisors/measure/SKILL.md. Every metric must cite source + date range. Runs
-  /memory sync after scorecard to persist baseline. Posts scorecard to coordinator."
+  prompt: "Metrics + analytics specialist. Operates a 3-stream model. Reads
+  supervisors/measure/SKILL.md. Stream 1 (pre-launch): build viral-patterns-library
+  per wave — top posts, hook formulas, CTAs, format specifics, anti-patterns — before
+  the content agent starts the bundle. Stream 2 (pre-publish gate): after content drops
+  bundle, score each surface hook against library (0-10 pattern match + predicted
+  engagement band low/mid/high). Default step: hook-vocab audit — grep bundle for 3-5
+  category-native phrases, flag mismatches, propose 1-2 native alternates. Output:
+  metrics/<run>-hook-predictions.md. Ping critic with avg score before final approval.
+  Stream 3 (async post-launch): record publish timestamp + URLs, pull GA4/GSC/platform
+  actuals at T+24h/T+7d/T+30d, update Linear ticket, flag coordinator if underperforming
+  (pageviews <200 at T+7d, stars delta 0). Promote hits / retire misses in library.
+  Every metric must cite source + date range. Runs /memory sync after each scorecard."
 ```
 
 ### 5. Loop
