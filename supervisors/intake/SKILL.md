@@ -30,10 +30,18 @@ Stage 1 does not open a owner hard gate, but it still uses the same status/write
 - One-liner (what it does)
 - Target user (who has the pain)
 - Current state (idea/MVP/live/billing)
+- **`product_type`**: `oss_tool` | `saas` | `course` | `service` — drives stage behavior downstream
 - Revenue model (free/freemium/paid/subscription)
 - ICP guess (explicitly marked as a hypothesis)
 - Core use cases (3)
 - “First value moment” definition
+
+#### `product_type: oss_tool` — additional required fields
+- GitHub repo URL
+- Install command (one-liner)
+- Course upsell URL (if exists — can be TBD)
+- Friction point (where in the install/use flow users hit a wall → course CTA fires here)
+- Conversion goal: `github_star` | `newsletter` | `course_purchase`
 
 ### Intake interview (minimum fields)
 - Primary goal for this run (1 sentence)
@@ -67,6 +75,7 @@ Stage 1 does not open a owner hard gate, but it still uses the same status/write
 - Blackboard:
   - `intake.product_brief` -> link/path
   - `intake.product_url` -> canonical URL
+  - `intake.product_type` -> `oss_tool` | `saas` | `course` | `service`
   - `intake.interview` -> link/path
   - `intake.research_kickoff` -> link/path
   - Include `status_summary`, `next_steps`, and `critic_verdict` in `production`

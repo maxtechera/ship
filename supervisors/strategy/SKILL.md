@@ -7,6 +7,18 @@ description: Own Stage 4 (Strategy). Converts Validate outputs into an executabl
 
 Own Stage 4 (STRATEGY). Produce the Ship Plan that the 4 parallel workstreams execute.
 
+## Product Type Branch
+
+Read `intake.product_type` from blackboard before producing the Ship Plan.
+
+**`oss_tool`**: The Ship Plan must define the OSS conversion chain:
+`GitHub install → newsletter signup → nurture → course purchase`.
+- Channel priorities: GitHub README CTA + reel content first. Paid lane is optional for v1 (organic-first default).
+- Offer section: replace SaaS pricing with course pricing only. No free tier, no trial.
+- Distribution: community-driven (GitHub, dev newsletters, Twitter/X, HN Show). Ads are secondary.
+
+**`saas | course | service`**: Standard Ship Plan structure below.
+
 ## Shared Contracts (DRY)
 Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Gate Prefill Requirement (owner-facing)`

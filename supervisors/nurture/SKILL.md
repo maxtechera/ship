@@ -7,6 +7,29 @@ description: Own Nurture workstream deliverables (Stage 5C). Produces live email
 
 Own Nurture deliverables during Stage 5 (Parallel Execution).
 
+## Product Type Branch
+
+Read `intake.product_type` from blackboard before executing.
+
+- `oss_tool` → [OSS Nurture Mode](#oss-nurture-mode)
+- `saas | course | service` → standard nurture deliverables below
+
+## OSS Nurture Mode
+
+For OSS tools, there is no paid email sequence — the product is free. Nurture is the content drip from GitHub install → newsletter → course purchase.
+
+**Deliverables:**
+- [ ] 3-email welcome sequence linked (day 0: welcome + tool intro; day 3: architecture deep-dive; day 7: course CTA)
+- [ ] MailerLite automation config linked — sequence fires when subscriber tagged `{tool-name}-install` (set by lead-capture stage)
+- [ ] Content drip schedule linked — long-format YouTube or newsletter issue linked in email 2
+- [ ] Test email evidence linked (rendering + links + unsubscribe)
+
+**Writeback keys:** `nurture.oss_welcome_sequence`, `nurture.oss_drip_schedule`
+
+**Quality Gate (OSS):**
+- PASS: 3-email sequence exists, test evidence linked, MailerLite tag trigger configured, drip schedule ready, critic PASS in `production`
+- REVISE: missing test evidence, broken CTA links, tag trigger not configured, or critic REVISE
+
 ## Shared Contracts (DRY)
 Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Gate Prefill Requirement (owner-facing)`

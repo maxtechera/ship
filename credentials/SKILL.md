@@ -143,13 +143,89 @@ This is the LAUNCH gate. Missing tokens surface before agents start, not mid-spr
 
 Drop a `*.yml` file into `$SHIP_CRED_DIR/extensions/` (or `$SHIP_EXTENSIONS_DIR`) to register additional checks. See [`extensions/README.md`](extensions/README.md) for the schema.
 
+## Install CLIs
+
+Install all credential CLIs at once (idempotent, interactive wizard or batch):
+
+```bash
+# Interactive — pick what to install
+python3 credentials/scripts/install.py
+
+# Install everything missing
+python3 credentials/scripts/install.py --all
+
+# List install status
+python3 credentials/scripts/install.py --list
+
+# Install a single CLI
+python3 credentials/scripts/install.py --only gh
+```
+
+## Authenticate Services
+
+Run the interactive auth wizard to authenticate all services. Shows current status (✅/❌/⏭) then offers to authenticate any failures:
+
+```bash
+# Full auth wizard
+bash credentials/scripts/auth.sh
+
+# Check a single service
+bash credentials/scripts/auth.sh --only linear
+
+# List status (no interactive auth)
+bash credentials/scripts/auth.sh --list
+```
+
+Auth types handled automatically:
+- **cli** — runs `<tool> auth login` (gh, railway, vercel, linear, supabase, render, etc.)
+- **token** — prompts to paste + saves to `$SHIP_CRED_DIR/.<service>_token`
+- **gog** — loads OAuth client credentials → adds Google account with all scopes (GA4, GSC, Drive, Gmail, Calendar)
+- **zoom** — prompts for 3-credential S2S OAuth (account_id + client_id + client_secret)
+- **dep** — shows parent dependency (Instagram/WhatsApp/GA4 depend on Meta/gog)
+
+## Refresh Expiring Tokens
+
+Auto-refresh tokens with known expiry (Meta 60d, MercadoLibre 6h, MercadoPago 180d):
+
+```bash
+# Check all token expiry
+python3 credentials/scripts/refresh.py --check
+
+# Refresh all expiring tokens
+python3 credentials/scripts/refresh.py
+
+# Refresh a single token
+python3 credentials/scripts/refresh.py --only meta
+
+# JSON output for automation
+python3 credentials/scripts/refresh.py --json
+```
+
+Exit 0 if all healthy. Exit 1 if any token needs attention.
+
+## Recommended First-Time Setup
+
+```bash
+# 1. Install all CLIs
+python3 credentials/scripts/install.py --all
+
+# 2. Authenticate all services
+bash credentials/scripts/auth.sh
+
+# 3. Verify — should exit 0
+python3 credentials/scripts/check_local.py
+```
+
 ## Structure
 
 ```
 credentials/
 ├── SKILL.md                    # this file — agent instructions
 ├── scripts/
-│   └── check_local.py          # stdlib-only runner — JSON output, exit codes, --only filter
+│   ├── check_local.py          # stdlib-only runner — JSON output, exit codes, --only filter
+│   ├── install.py              # idempotent CLI installer (wizard / --all / --list / --only)
+│   ├── auth.sh                 # interactive auth wizard (whoami + authenticate failures)
+│   └── refresh.py              # auto-refresh expiring tokens (Meta / MercadoLibre / MercadoPago)
 ├── registry/
 │   └── core.yml                # declarative check index (verify_cmd, fix_cmd per service)
 ├── extensions/                 # drop your own *.yml check definitions here

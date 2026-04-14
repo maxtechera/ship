@@ -7,6 +7,44 @@ description: Own Lead Capture workstream deliverables (Stage 5B). Produces offer
 
 Own Lead Capture deliverables during Stage 5 (Parallel Execution).
 
+## Product Type Branch
+
+Read `intake.product_type` from blackboard.
+
+- **`oss_tool`** → the tool itself IS the lead magnet. Run [OSS Lead Capture Mode](#oss-lead-capture-mode).
+- **`saas` | `course` | `service`** → run standard lead capture deliverables below.
+
+---
+
+## OSS Lead Capture Mode (when `intake.product_type: oss_tool`)
+
+The tool is free. The lead magnet IS the tool. Don't build a separate lead magnet — wire the GitHub → newsletter conversion.
+
+### OSS Lead Capture Deliverables
+- [ ] **Newsletter signup wired** at `maxtechera.com/tools` — tool page captures email
+- [ ] **GitHub README newsletter CTA** — one-line add to README footer pointing to newsletter
+- [ ] **UTM links** created for each reel + README link (track which asset drives conversions)
+- [ ] **Course CTA page** at friction point (e.g. `/tools/memory/course`) — captures email + routes to course
+- [ ] **MailerLite tag** created per tool (e.g. `memory-install`) for segmentation
+- [ ] End-to-end test: GitHub README → newsletter signup → confirmation email received
+
+### OSS Conversion Chain
+```
+GitHub README → newsletter signup (tagged by tool) → nurture → course CTA
+Reel → maxtechera.com/tools → same signup flow
+```
+
+### OSS Writeback Keys
+- `lead_capture.oss_newsletter_cta` — URL + copy
+- `lead_capture.oss_utm_links` — UTM set per tool per channel
+- `lead_capture.oss_course_cta_page` — course CTA page URL
+- `lead_capture.oss_mailerlite_tags` — tag names per tool
+- `lead_capture.oss_capture_test_log` — end-to-end test evidence
+
+---
+
+## Standard Lead Capture Mode (saas | course | service)
+
 ## Shared Contracts (DRY)
 Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Gate Prefill Requirement (owner-facing)`

@@ -7,13 +7,94 @@ description: Own Awareness workstream deliverables (Stage 5A). Produces deployab
 
 Own Awareness deliverables during Stage 5 (Parallel Execution).
 
+## Product Type Branch
+
+Read `intake.product_type` before producing any deliverables.
+
+- **`oss_tool`** → run [OSS Demo-First Mode](#oss-demo-first-mode) instead of standard awareness pack
+- **`saas` | `course` | `service`** → run standard awareness deliverables below
+
 ## Shared Contracts (DRY)
 Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Gate Prefill Requirement (owner-facing)`
 - `Writeback Schema (Canonical)`
 - `Deliverable Lifecycle States (Stage 9)`
 
-## Inputs (Required)
+---
+
+## OSS Demo-First Mode (when `intake.product_type: oss_tool`)
+
+**Core principle:** Demo-first > readme-first. Nobody reads docs and decides to buy. They try it, get impressed, and convert. The free content IS the sales page.
+
+### OSS Awareness Inputs (Required)
+- `intake.product_brief` (includes GitHub repo, install command, friction point)
+- `validate.oss_pain_quotes` (10+ real quotes)
+- `validate.friction_point` (where course CTA fires)
+- `validate.search_intent_map` (5-10 keywords)
+
+### OSS Awareness Deliverables (Required)
+- [ ] **Reel scripts — Problem** (15-30s): show the pain moment, no solution yet. CTA: GitHub repo URL.
+- [ ] **Reel scripts — Fix** (30-45s): show the install + the moment it works. CTA: link in bio → free install.
+- [ ] **Reel scripts — Architecture** (45-60s): show how it works under the hood. CTA: course link.
+- [ ] **Long-format script** (10-20min YouTube): full demo end-to-end — install, real use case, result. CTA: GitHub + newsletter + course.
+- [ ] **Newsletter issue draft**: written breakdown of the architecture for NODO subscribers.
+- [ ] **GitHub README CTA copy**: 2-3 lines added to README pointing to course at the friction point.
+- [ ] **Hook library**: 5-10 hooks per reel format (problem/fix/architecture) sourced from `validate.oss_pain_quotes`.
+
+### OSS Reel Template
+
+Each tool gets 3 reels following this structure:
+
+**Reel 1 — The Problem (15-30s)**
+```
+Hook: [verbatim pain quote or common frustration]
+Show: the failure moment (agent forgets / says done but it's wrong / launch pipeline breaks)
+End: "There's a fix." + GitHub URL on screen
+CTA: "[tool name] — free on GitHub"
+```
+
+**Reel 2 — The Fix (30-45s)**
+```
+Hook: "Install this in 30 seconds"
+Show: install command → setup → the moment it works (the money shot)
+End: "Free. Open source." + install command on screen
+CTA: "Link in bio → free install"
+```
+
+**Reel 3 — The Architecture (45-60s)**
+```
+Hook: "Here's how it actually works"
+Show: internals (the interesting technical decision)
+End: "Want the full course?" + course link
+CTA: "Full course — [price] — link in bio"
+```
+
+### OSS Conversion Chain
+```
+Reel → GitHub install → friction point → README CTA → newsletter → course purchase
+```
+Every OSS awareness asset must link to the next step in this chain. No dead ends.
+
+### OSS Awareness Verification
+- All 3 reel scripts written and reviewed
+- Long-format script complete with screen-recording shot list
+- Hook library has ≥5 options per reel type
+- README CTA copy is written and ready to commit
+- Newsletter issue drafted
+- Every asset links to the next step in the conversion chain
+
+### OSS Writeback Keys
+- `awareness.oss_reel_scripts` — 3 reel scripts (problem/fix/architecture)
+- `awareness.oss_longformat_script` — long-format video script + shot list
+- `awareness.oss_hook_library` — hook variants per reel type
+- `awareness.oss_newsletter_draft` — newsletter issue
+- `awareness.oss_readme_cta` — README CTA copy ready to commit
+
+---
+
+## Standard Awareness Mode (saas | course | service)
+
+### Inputs (Required)
 - `strategy.ship_plan`
 - `validate.icp`
 - Live product URL (or demo surface)
