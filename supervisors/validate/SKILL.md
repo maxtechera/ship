@@ -19,7 +19,50 @@ Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - Access to research tools/sources
 - Linear Stage 2 + Stage 3 tickets
 
-## ICP Discovery (Mandatory First Step)
+## Product Type Branch
+
+Read `intake.product_type` from blackboard before starting validation. It determines the entire validation approach.
+
+| `product_type` | Validation goal | ICP definition | Evidence type | Success signal |
+|---|---|---|---|---|
+| `saas` / `service` | Paid demand proof | Who will pay | Reddit WTP quotes, pricing signals | Confidence ≥80% ship |
+| `oss_tool` | Community adoption signal | Who will install + hit the friction point | GitHub instars, Reddit/HN "I wish", search volume | GitHub stars + newsletter conversions |
+| `course` | Audience pain + learning intent | Who has the skill gap | Forum questions, "how do I" searches, competitive course reviews | Enrollment intent signals |
+
+**If `product_type: oss_tool`:** skip paid demand validation entirely. Run [OSS Adoption Validation](#oss-adoption-validation) instead of standard validation.
+
+---
+
+## OSS Adoption Validation (when `product_type: oss_tool`)
+
+Replaces standard ICP discovery + validation for OSS tools.
+
+### Goal
+Confirm the problem is real, the install path is frictionless, and the course upsell moment is clearly defined.
+
+### Research targets
+1. **Pain signal**: Reddit/HN/X — find "I wish my AI agent remembered X", "tired of re-explaining", "agent forgot context" etc. Real quotes only.
+2. **Competitive landscape**: What other tools address this? Where do they fall short? What's the install count / GitHub stars for comps?
+3. **Search demand**: What does someone Google before finding this tool? (informs README SEO + reel hooks)
+4. **Friction mapping**: Where in the tool's own docs/install flow do users get stuck? This is the course CTA trigger point.
+5. **Course demand**: Is there evidence people pay to learn this skill? (Udemy courses, YouTube tutorials, paid guides on this problem)
+
+### OSS Deliverables
+- [ ] Pain quote bank (10+ direct quotes, sourced)
+- [ ] Competitive landscape (3-5 comps, gaps, install signals)
+- [ ] Search intent map (5-10 keywords → README + reel hook coverage)
+- [ ] Friction point doc: where the tool hits a wall → where course CTA should fire
+- [ ] Course demand evidence: proof people pay to learn this problem area
+
+### OSS ICP (Simplified)
+No need for 20-30 segment brainstorm. OSS ICP is narrower:
+- **Installer**: Developer who downloads and uses the tool. Pain: the problem the tool solves.
+- **Student**: Installer who hits the friction point and wants to go deeper. Pain: "I want to understand this, not just install it."
+- **Buyer**: Student who sees the course CTA at the friction point and converts. WTP evidence required.
+
+---
+
+## ICP Discovery (Mandatory First Step — `saas` | `course` | `service` only)
 
 Before validation research, execute comprehensive ICP discovery:
 

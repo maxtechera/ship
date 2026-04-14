@@ -7,6 +7,37 @@ description: Own Stage 8 (Measure). Produces performance reports, compares again
 
 Own Stage 8 (MEASURE). Measurement is a deliverable, not a dashboard screenshot.
 
+## Product Type Branch
+
+Read `intake.product_type` from blackboard. OSS tools use a different KPI set than SaaS/service runs.
+
+### OSS Tool KPIs (when `intake.product_type: oss_tool`)
+
+| KPI | Source | Target (to define in Strategy) |
+|---|---|---|
+| GitHub stars | GitHub API / repo page | — |
+| README CTR (newsletter CTA) | UTM + MailerLite | — |
+| Newsletter signups (tagged by tool) | MailerLite tag count | — |
+| Course page visits | GA4 UTM | — |
+| Course conversions | Payment provider | — |
+| Reel views + profile visits | IG / TikTok analytics | — |
+| Reel → link tap rate | IG analytics | — |
+
+**Funnel health check (OSS):**
+```
+GitHub stars → README CTA clicks → newsletter signups → course visits → course purchases
+Track drop-off at each step. A low newsletter→course conversion means the friction point CTA needs work.
+```
+
+OSS measure report must include:
+- [ ] GitHub stars delta (week over week)
+- [ ] Newsletter signups by tool tag (not just total)
+- [ ] Reel performance per hook type (problem/fix/architecture) — which converts best
+- [ ] Course CTA page visits + conversion rate
+- [ ] Drop-off at each funnel step with a hypothesis for the worst drop
+
+---
+
 ## Shared Contracts (DRY)
 Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Gate Prefill Requirement (owner-facing)`
