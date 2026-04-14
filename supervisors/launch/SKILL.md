@@ -21,6 +21,16 @@ Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
   - `closing.*`
 - Linear Stage 6 + Stage 7 tickets
 
+## Credential Preflight (Required Before Deploy)
+
+Before any Stage 7 deploy action (publishing to live URLs, submitting to directories, scheduling social posts):
+
+1. Run: `python3 credentials/scripts/check_local.py --json`
+2. Exit 0 → proceed.
+3. Exit 1 → halt. Print `fix_cmd` for each failure. Post to Linear ticket with exact missing credentials. Do not deploy.
+
+Intentionally redundant with the engine-level gate — the launch supervisor must never skip this check, even when invoked directly. Full credential registry: [`credentials/SKILL.md`](../../credentials/SKILL.md)
+
 ## Deliverables (Required)
 - [ ] Pre-launch readiness checklist linked (one line per workstream with artifact links)
 - [ ] owner approval request posted with explicit decision options

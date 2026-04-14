@@ -1,14 +1,19 @@
 ---
 name: ship
 version: "0.2.0"
-description: "Credentials preflight + GTM pipeline. Health-check 30+ CLIs/tokens, then execute idea → validate → market → sell → measure."
-argument-hint: ''
+description: "GTM pipeline with team mode. /ship spawns coordinator + executor + critic team, renders live dashboard of all active runs, loops every 10m. /ship create starts a new run."
+argument-hint: 'ship (dashboard + team), ship create "<idea>", ship status, ship run <RUN-ID>'
 allowed-tools: Bash, Read, Write
 homepage: https://github.com/maxtechera/ship
 repository: https://github.com/maxtechera/ship
 author: maxtechera
 license: MIT
-user-invocable: false
+user-invocable: true
+triggers:
+  - ship
+  - ship create
+  - ship status
+  - ship run
 metadata:
   openclaw:
     emoji: "🚀"
@@ -36,7 +41,191 @@ metadata:
 
 # ship
 
-Credentials preflight and GTM pipeline for AI agents. Part of the maxtechera skill suite.
+Run `/ship` once. A coordinator team spawns, the dashboard renders, and work starts moving.
+
+The team reads all active ship runs from Linear, assigns stage work to the executor, sends deliverables to the critic before every gate, and keeps a live dashboard refreshing every 10 minutes. You review the critic's verdict, approve gates, and watch runs advance to Done.
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `/ship` | Spawn coordinator team + render live dashboard of all active runs |
+| `/ship create "<idea>"` | Create Linear run ticket, preflight credentials, hand off to engine supervisor |
+| `/ship status [RUN-ID]` | Read active run from Linear, print stage + last update + blocked items |
+| `/ship run <RUN-ID>` | Resume an existing run (re-triggers engine supervisor for that ticket) |
+
+## /ship (default — team mode)
+
+Called with no arguments. Spawns the ship coordinator team and renders the live dashboard. Stays running via `/loop`.
+
+### 1. Preflight
+
+```bash
+python3 credentials/scripts/check_local.py --only "linear" --json
+```
+
+If exit 1 → print `fix_cmd` per failure. Do not spawn team until credentials pass.
+
+### 2. Pull state from all data sources (parallel)
+
+| Source | What to read | How |
+|--------|-------------|-----|
+| Linear | All tickets labeled `ship-engine` (any state) | Linear API or `linear` CLI |
+| GitHub | Open PRs + CI state for ship-project repos | `gh pr list --repo <repo>` |
+| Memory | Last session digest + recent decisions | Read `MEMORY.md` router |
+
+Group Linear tickets by: run ID → stage → state (in_progress / pending / blocked / done).
+
+### 3. Render dashboard
+
+Print the dashboard to the user before spawning the team. Format:
+
+```
+## Ship Dashboard  [2026-04-14 14:32]
+
+Active Runs (<N>)
+  <RUN-ID>  <product-name>          <current-stage>  <state>   [<wave>]
+  ...
+
+Pipeline Metrics (30d)
+  Assets shipped:     N/M
+  Critic approvals:   N/M (avg score)
+  Conversions:        N
+  Metrics captures:   N (M awaiting first publish)
+
+Blocked
+  <RUN-ID>  <reason>  [fix_cmd if credentials]
+  ...
+
+Team
+  coordinator — spawning
+  critic      — idle
+  strategist  — idle
+  content     — idle
+  growth      — idle
+  nurture     — idle
+  closer      — idle
+  launcher    — idle
+  analyst     — idle
+```
+
+If no active runs → print "No active ship runs. Use /ship create \"<idea>\" to start one."
+
+### 4. Spawn team
+
+Spawn the full pre-defined GTM team. Every role starts at boot — coordinator assigns work as stages become actionable.
+
+```
+TeamCreate team_name="ship"
+
+# ── Control ──────────────────────────────────────────────────
+
+Agent name="coordinator" team_name="ship" run_in_background=true
+  prompt: "Read ship/SKILL.md + supervisors/engine/SKILL.md. Pull all Linear tickets
+  labeled ship-engine. For each active run identify the next actionable stage and route
+  to the correct specialist via SendMessage. Zero-idle: always queue a secondary task.
+  Loop: /loop 10m /ship"
+
+Agent name="critic" team_name="ship" run_in_background=true
+  prompt: "Read supervisors/critic/SKILL.md. Receive review requests via SendMessage.
+  Never read the executor's work log — fresh context only. Return PASS/REVISE/FAIL
+  with line-level evidence. Required before every gate and every verified state advance."
+
+# ── GTM specialists ───────────────────────────────────────────
+
+Agent name="strategist" team_name="ship" run_in_background=true
+  prompt: "GTM strategy specialist. Handles: intake research, ICP definition, positioning,
+  offer design, pricing, channel selection. Reads supervisors/intake/SKILL.md,
+  supervisors/validate/SKILL.md, supervisors/strategy/SKILL.md. Receives stage ticket
+  from coordinator. Writes blackboard keys: intake.*, validate.*, strategy.*
+  Posts completion to coordinator."
+
+Agent name="content" team_name="ship" run_in_background=true
+  prompt: "Content production specialist. Handles: copy, carousels, reels, blog posts,
+  newsletters, landing pages, offer pages, storyboards. Reads ship/content/SKILL.md
+  (all 17 sub-skills). Receives asset brief from coordinator. Enforces format specs
+  (carousel 1080x1350, reel hook 0-3s, newsletter subject ≤50 chars). Posts artifacts
+  + live URLs to coordinator."
+
+Agent name="growth" team_name="ship" run_in_background=true
+  prompt: "Growth + lead capture specialist. Handles: lead capture pages, UTM wiring,
+  GA4 conversion events, A/B test setup, referral mechanics. Reads
+  supervisors/lead-capture/SKILL.md. UTM required before any campaign goes live.
+  A/B test requires control variant ≥400 recipients. Posts wiring evidence to coordinator."
+
+Agent name="nurture" team_name="ship" run_in_background=true
+  prompt: "Nurture + email sequence specialist. Handles: welcome sequences, drip schedules,
+  MailerLite tag triggers, segmentation. Reads supervisors/nurture/SKILL.md (including
+  OSS Nurture Mode for oss_tool runs). Writes blackboard keys: nurture.*
+  Posts sequence screenshots + send-test evidence to coordinator."
+
+Agent name="closer" team_name="ship" run_in_background=true
+  prompt: "Closing + conversion specialist. Handles: sales pages, course pages, objection
+  packs, checkout flows, post-purchase sequences. Reads supervisors/closing/SKILL.md
+  (including OSS Closing Mode for oss_tool runs). Writes blackboard keys: closing.*
+  Posts page URL + checkout test evidence to coordinator."
+
+Agent name="launcher" team_name="ship" run_in_background=true
+  prompt: "Launch coordinator. Handles: pre-launch readiness checklist, social push
+  scheduling, directory submissions, final credentials preflight. Reads
+  supervisors/launch/SKILL.md. Runs: python3 credentials/scripts/check_local.py --json
+  before any deploy action — exit 1 halts launch. Posts launch package to coordinator."
+
+Agent name="analyst" team_name="ship" run_in_background=true
+  prompt: "Metrics + analytics specialist. Handles: GA4 event verification, Stripe revenue
+  pull, KPI scorecards, conversion rate calculation, MoM delta. Reads
+  supervisors/measure/SKILL.md. Every metric must cite source + date range. Runs
+  /memory sync after scorecard to persist baseline. Posts scorecard to coordinator."
+```
+
+### 5. Loop
+
+```
+/loop 10m /ship
+```
+
+Each tick: re-pull all data sources, re-render dashboard, identify newly actionable stages, route to correct specialist if idle. Dashboard `Team` row updates to show which agent is active.
+
+### Pre-defined team roster
+
+| Agent | Stage coverage | Isolation |
+|-------|---------------|-----------|
+| `coordinator` | All — routes + assigns | none |
+| `critic` | All gates + verified advances | none |
+| `strategist` | Intake → Validate → Strategy | none |
+| `content` | Awareness (all asset types) | none |
+| `growth` | Lead Capture (UTM, GA4, A/B) | none |
+| `nurture` | Nurture (sequences, MailerLite) | none |
+| `closer` | Closing (sales/course pages) | none |
+| `launcher` | Launch (readiness, push, directories) | none |
+| `analyst` | Measure (GA4, Stripe, scorecards) | none |
+
+**Dynamic roles** — coordinator spawns these as stage complexity demands:
+
+| Agent | When to spawn | Prompt reference |
+|-------|--------------|-----------------|
+| `researcher` | Intake requires deep ICP / competitor research | `supervisors/intake/SKILL.md` |
+| `seo-specialist` | Run includes SEO blog deliverable | `skills/seo/SKILL.md` |
+| `outreach` | Run includes B2B cold email sequence | `skills/sales-outreach/SKILL.md` |
+| `designer` | Run requires visual asset creation (not copy) | `ship/content/skills/image/SKILL.md` |
+
+Coordinator spawns dynamic roles via `Agent name="<role>" team_name="ship" run_in_background=true` when the stage ticket specifies a deliverable that the pre-defined roster doesn't cover.
+
+**Zero-idle rule:** coordinator always has a queued secondary task for every active specialist. When a stage completes, next assignment is sent immediately — no agent ever waits.
+
+## /ship create
+
+Steps the agent follows verbatim:
+
+1. **Parse `<idea>` string.** If it contains "open source", "github", "tool", "CLI", or "library" → default `product_type: oss_tool`. Otherwise prompt the user to confirm: `saas | course | service | oss_tool`.
+2. **Credentials preflight.** Run `python3 credentials/scripts/check_local.py --only "linear" --json`. If exit 1 → print `fix_cmd` for each failure, halt. Do not create the ticket until credentials pass.
+3. **Create Linear ticket.** Title = idea string. Label = `ship-engine`. Fill the orchestrator contract sections with stage-1 defaults:
+   - Inputs: `product_type`, idea string
+   - Deliverables: complete ship run (all stages PASS)
+   - Verification: all stages pass critic gates, credentials preflight passes at launch
+   - Artifacts: ship run ID, final stage URLs
+4. **Post the Linear ticket URL** to the user.
+5. **Hand off to `supervisors/engine/SKILL.md`** with the new ticket ID.
 
 ## Sub-skills
 

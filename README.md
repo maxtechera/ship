@@ -1,9 +1,9 @@
-# /credentials
+# /ship
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.0-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.2.0-green.svg)](CHANGELOG.md)
 
-**Your deployment just failed because a token expired. /credentials catches that before you push.**
+**End-to-end GTM pipeline. Idea → validate → market → sell → measure. Credential-guarded at every deploy step.**
 
 ```
 /plugin marketplace add maxtechera/ship

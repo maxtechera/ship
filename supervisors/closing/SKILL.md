@@ -7,6 +7,30 @@ description: Own Closing workstream deliverables (Stage 5D). Produces pricing/ch
 
 Own Closing deliverables during Stage 5 (Parallel Execution).
 
+## Product Type Branch
+
+Read `intake.product_type` from blackboard before executing.
+
+- `oss_tool` → [OSS Closing Mode](#oss-closing-mode)
+- `saas | course | service` → standard closing deliverables below
+
+## OSS Closing Mode
+
+For OSS tools, "closing" means course conversion — not SaaS checkout. The product is free; the course is the paid offer.
+
+**Deliverables:**
+- [ ] Course sales page linked (path: `/tools/{slug}/course`, sourced from `intake.course_upsell_url` or built fresh)
+- [ ] Pricing: one price, no free tier, no trial. Scarcity is the friction point from `intake.friction_point`.
+- [ ] Objection pack linked — 5 objections sourced from `validate.oss_pain_quotes` (why not just read the docs? why pay when the tool is free? etc.)
+- [ ] Post-purchase sequence linked: confirmation email + course access link + GitHub stars ask
+- [ ] Checkout verification evidence linked (test flow)
+
+**Writeback keys:** `closing.oss_course_page`, `closing.oss_objections`, `closing.oss_post_purchase`
+
+**Quality Gate (OSS):**
+- PASS: course page exists, objection pack uses ICP language, post-purchase sequence is ready, checkout tested, critic PASS in `production`
+- REVISE: missing test flow, objections don't match ICP language, no course page URL, or critic REVISE
+
 ## Shared Contracts (DRY)
 Follow canonical contracts in `openclaw-config/skills/engine/WORKFLOW.md`:
 - `Gate Prefill Requirement (owner-facing)`
