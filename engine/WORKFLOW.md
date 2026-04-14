@@ -41,6 +41,8 @@ All major architectural and product decisions for Ship Engine, locked in as of *
 | 15 | Critic agent | **Auto before every gate + before any deliverable can be marked `verified` in production. Separate spawn with full context. `REVISE` blocks gate and blocks the deliverable from going live (Max can override at gates only). Cross-deliverable consistency checks. Implementation: `skills/ship-critic/` (SKILL.md + rubrics/).** | Quality gates only mean something if something is actually checking quality. Separate spawn avoids self-assessment bias. Cross-deliverable consistency is the key value: ICP language in Validate must flow through to landing page copy to email subject lines. Max override prevents infinite REVISE loops while preserving hard-gate integrity. |
 | 16 | Content approval queue | **Canvas + Telegram. Batch per-stage. Daily digest for stragglers. Delegation via approval rules (auto-approve categories).** | Dual-surface matches Max's workflow: canvas for monitoring, Telegram for living. Batching per stage eliminates per-item fatigue. Delegation rules provide a gradual path to more automation as template trust builds. |
 | 17 | Product type branching | **`product_type` field in intake brief drives stage behavior. Types: `oss_tool`, `saas`, `course`, `service`.** | OSS tools have fundamentally different GTM motion: free tool → demo-first content → GitHub install → newsletter → course upsell. Validate skips paid demand proof and runs adoption signal research instead. Awareness skips standard ad pack and produces 3 reels + long format. Lead capture uses the tool itself as the lead magnet. Measure tracks GitHub stars + funnel drop-off instead of ROAS. |
+| 18 | Named agent teams | **Each run creates a named team via `TeamCreate`. Agents persist for the run, coordinated via `SendMessage`. Roster varies by `product_type`.** | Re-spawning agents per task loses context and wastes briefing overhead. Named persistent agents keep state warm, receive task assignments directly, and hand off to each other (researcher → content-lead via `SendMessage`). Critic agent stays live for the whole run — no per-gate re-spawn. |
+| 19 | Gaps Doc before every hard gate | **Before Gate-V, Gate-S, Gate-L: owning supervisor produces a structured Gaps Doc (CLOSED/PARTIAL/OPEN/ASYNC per blocker) before posting the Decision Packet.** | Borrowed from answer-engine gtm-team's launch-gaps.md pattern. The Gaps Doc forces explicit acknowledgement of known limitations before an approval decision. Any OPEN+blocking gap → NO-GO. PARTIAL/ASYNC gaps → GO with documented limitations. Critic's primary input at gates. |
 
 > Full decision log with options considered: `docs/SHIP-ENGINE-DECISIONS.md`
 
@@ -234,11 +236,81 @@ In this repo, that pattern exists as `openclaw-config/tools/linear-webhook-keepa
 
 ---
 
+## Named Agent Team
+
+Each Ship Engine run gets a named team. Agents persist for the run duration and are coordinated via `SendMessage` rather than re-spawned per task. This keeps context warm and eliminates re-briefing overhead.
+
+### Team Roster by Product Type
+
+**`saas` | `service` (default)**
+| Agent name | Role | Isolation | Owns |
+|---|---|---|---|
+| `researcher` | Validate + ICP | none | Stages 2-3 |
+| `strategist` | GTM plan | none | Stage 4 |
+| `content-lead` | Awareness + copy | none | Stage 5A content |
+| `growth` | Lead capture + funnel | none | Stages 5B-5D + Measure |
+| `critic` | Quality gate | none | Gates V/S/L + verified transitions |
+
+**`oss_tool`**
+| Agent name | Role | Isolation | Owns |
+|---|---|---|---|
+| `researcher` | Adoption signal + friction mapping | none | Stages 2-3 |
+| `content-lead` | Reel scripts + long format + newsletter | none | Stage 5A OSS mode |
+| `growth` | GitHub → newsletter → course wiring | none | Stages 5B + Measure |
+| `critic` | Quality gate | none | Gates + verified transitions |
+
+**`course`**
+| Agent name | Role | Isolation | Owns |
+|---|---|---|---|
+| `researcher` | Audience pain + learning intent | none | Stages 2-3 |
+| `strategist` | Curriculum + offer | none | Stage 4 |
+| `content-lead` | Modules + copy | none | Stage 5A |
+| `growth` | Lead capture + nurture + enrollment | none | Stages 5B-5D + Measure |
+| `critic` | Quality gate | none | Gates + verified transitions |
+
+### Team Lifecycle
+
+**On run start (Intake):**
+```
+TeamCreate team_name="ship-{run-id}" description="Ship run {ticket} — {product_name}"
+Agent name="researcher"   team_name="ship-{run-id}" run_in_background=true
+Agent name="strategist"   team_name="ship-{run-id}" run_in_background=true  # skip for oss_tool
+Agent name="content-lead" team_name="ship-{run-id}" run_in_background=true
+Agent name="growth"       team_name="ship-{run-id}" run_in_background=true
+Agent name="critic"       team_name="ship-{run-id}" run_in_background=true
+```
+
+**Assigning work:**
+```
+SendMessage to="researcher" message="Stage 2 starting. Read validate supervisor SKILL.md.
+Inputs: {intake.product_brief}, {intake.research_kickoff}. 
+Deliver: validation_report + icp to blackboard. Post status to Linear {ticket}."
+```
+
+**On stage completion → assign next, never re-spawn:**
+```
+SendMessage to="researcher" message="Stage 2 done. Standby for Stage 8 (Measure synthesis).
+Secondary task: read competitor gaps from validate.research_dataset, draft iteration hypotheses."
+```
+
+**On run end:**
+- Agents complete their final deliverables
+- Team is shut down gracefully via `SendMessage to="all" message="Run complete. Shutdown."`
+- Team config archived to `runs/{run-id}/team.json`
+
+### Coordination Rules
+- **Critic is always live.** Spawn it at run start, keep it warm. `SendMessage to="critic"` to trigger checks — don't re-spawn per gate.
+- **Researcher hands off to content-lead.** After ICP is locked, researcher sends VoC phrases directly via `SendMessage` — don't rely only on blackboard reads.
+- **No worktrees by default.** Ship runs produce content/docs, not code. Only add `isolation="worktree"` if a product-eng agent is added for code deliverables.
+- **One team per run.** Multi-product parallel runs use separate teams (`ship-{run-id-a}`, `ship-{run-id-b}`).
+
+---
+
 ## Supervisor Skills (Stage Owners)
 
 Each stage is owned by a supervisor skill. Supervisors do not do all production themselves; they:
 - translate Inputs into a concrete Deliverables checklist (Linear)
-- delegate execution to flat `content-*` skills and existing tools
+- delegate execution to named team agents (via `SendMessage`) and flat `content-*` skills
 - verify artifacts exist and are linked (orchestrator contract)
 - write back blackboard keys using `{stage}.{artifact}` naming
 
@@ -262,7 +334,7 @@ Approval gates are owned by the adjacent supervisors:
 
 Implementation note:
 - Ship Engine is skills-first and runs via wake-driven supervision — no CLI scripts.
-- Active control loop is `skills/ship-engine-supervisor/SKILL.md` delegating to `skills/ship-*-supervisor/SKILL.md`.
+- Active control loop is `skills/ship-engine-supervisor/SKILL.md` delegating to named team agents + `skills/ship-*-supervisor/SKILL.md`.
 
 ---
 
@@ -418,6 +490,54 @@ For any user validation event (hard gates and high-risk deliverables), the agent
 - A clear recommendation (`recommended_action`) with short justification
 - `next_steps` that will execute immediately after approval
 - If `revise` is recommended: an explicit change list (what to fix, who owns it, and what will be re-presented)
+
+### Gaps Doc (Required Before Every Hard Gate)
+
+Before posting any hard-gate Decision Packet (Gate-V, Gate-S, Gate-L), the owning supervisor must produce a **Gaps Doc** — a structured status table of every known blocker and risk for that gate. Inspired by the answer-engine launch-gaps pattern.
+
+**Format:**
+```markdown
+## Gaps — Gate-{V|S|L} | Run {ticket} | {date}
+
+| Gap | Status | Blocking? | Notes |
+|-----|--------|-----------|-------|
+| [thing that could be wrong] | ✅ CLOSED | No | Fixed: [how] |
+| [thing that could be wrong] | ⚠️ PARTIAL | No | [what's missing, deferred to when] |
+| [thing that could be wrong] | ❌ OPEN | YES | [what needs to happen to close] |
+| [external dependency] | ⏳ ASYNC | No | [owner, expected by] |
+
+### GO / NO-GO: {GO | NO-GO}
+**Hard blockers:** {count} — ALL CLEAR | {list open blockers}
+**Known limitations going forward:** {list partial + async gaps}
+```
+
+**Rules:**
+- Any `❌ OPEN` gap marked `Blocking? YES` → NO-GO. Do not post Decision Packet. Fix first.
+- `⚠️ PARTIAL` and `⏳ ASYNC` gaps → GO with documented limitations. Owner acknowledges them in the decision.
+- The Gaps Doc is the critic's primary input for gate checks. Send it via `SendMessage to="critic"` before running the gate check.
+- Link the Gaps Doc in the Decision Packet under `evidence_links`.
+- Blackboard key: `{stage}.gaps_doc` (link to Linear comment or doc path).
+
+**Gate-specific gap checklist minimums:**
+
+*Gate-V (Post-Validation):*
+- Validation confidence score ≥ threshold
+- ICP has direct-source evidence (no analyst-only claims)
+- Competitive gap is documented
+- No show-stopping market conditions (timing, saturation)
+
+*Gate-S (Post-Strategy):*
+- Offer is positioned against ICP VoC language
+- Channel plan has acquisition cost estimates
+- Budget is approved or soft-blocked acknowledged
+- No unresolved ICP↔offer mismatches
+
+*Gate-L (Pre-Launch):*
+- All credentials checked (run `/ship credentials` or equivalent)
+- All parallel deliverables critic-verified
+- Signup → payment flow tested end-to-end
+- Analytics / tracking instrumented
+- Rollback plan documented
 
 ### Writeback Schema (Canonical)
 

@@ -19,6 +19,7 @@ Each wake executes ONE safe cycle (bounded work) and then exits.
 - Linear is the system of record for work: ticket descriptions + comments + attachments
 - Orchestrator contract: `https://github.com/maxtechera/orchestrator/blob/main/SKILL.md`
 - Canonical workflow: `engine/WORKFLOW.md`
+- Named team: `runs/{run-id}/team.json` (created at run start, read on every wake)
 
 ## Shared Contracts (DRY)
 Use canonical definitions from `engine/WORKFLOW.md`:
@@ -34,9 +35,9 @@ Skill: `supervisors/critic/SKILL.md`
 Spawn the critic as a separate sub-agent (not inline) before every hard gate and before any deliverable advances to `verified` in `production`. The critic must return a verdict before the Decision Packet is posted or the deliverable state is advanced.
 
 **Auto-invoke at:**
-- Before posting Gate-V Decision Packet → `ship-validate-supervisor` triggers, supervisor waits for verdict
-- Before posting Gate-S Decision Packet → `ship-strategy-supervisor` triggers, supervisor waits for verdict
-- Before posting Gate-L Decision Packet → `ship-launch-supervisor` triggers, supervisor waits for verdict
+- Before posting Gate-V Decision Packet → owning supervisor produces Gaps Doc first, sends to critic via `SendMessage to="critic"`, waits for verdict
+- Before posting Gate-S Decision Packet → owning supervisor produces Gaps Doc first, sends to critic via `SendMessage to="critic"`, waits for verdict
+- Before posting Gate-L Decision Packet → owning supervisor produces Gaps Doc first, sends to critic via `SendMessage to="critic"`, waits for verdict
 - Before posting Final Social Push approval package → `ship-launch-supervisor` triggers
 - Before any deliverable moves from `in_production` → `verified` (all parallel supervisors)
 
@@ -52,12 +53,13 @@ The supervisor must never silently advance past a `REVISE` verdict without one o
 
 ## Core Loop (One Cycle)
 1. Find active Ship Engine runs (Linear tickets labeled `ship-engine`)
-2. For each run, identify the next actionable stage ticket(s)
-3. Enforce the orchestrator contract on that ticket (Inputs/Deliverables/Verification/Artifacts)
+2. For each run, read `runs/{run-id}/team.json` to get named agent roster. If team not yet created, create it now (see Named Agent Team in `engine/WORKFLOW.md`).
+3. Identify the next actionable stage ticket(s)
+4. Enforce the orchestrator contract on that ticket (Inputs/Deliverables/Verification/Artifacts)
    - Intake research-first enforcement:
      - Stage 1 must include `intake.product_brief`, `intake.interview`, and `intake.research_kickoff`
      - Validate cannot be treated as actionable until intake research kickoff is linked
-4. Delegate to the correct stage supervisor skill:
+5. Delegate to named agent via `SendMessage` first; fall back to stage supervisor skill if agent is not live:
    - `ship-intake-supervisor`
    - `ship-validate-supervisor`
    - `ship-strategy-supervisor`
