@@ -15,7 +15,7 @@ OpenClaw:
 clawhub install ship
 ```
 
-Zero config. Run `/ship` immediately.
+Requires [orchestrator](https://github.com/maxtechera/orchestrator) — ship uses orchestrator's agent team coordination, loop mechanics, and verification harness. Ship adds the GTM pipeline, credential gate, and domain roster.
 
 ---
 
@@ -72,7 +72,9 @@ git clone https://github.com/maxtechera/ship.git ~/.agents/skills/ship
 
 ## The Team
 
-Nine pre-defined roles. Coordinator assigns on every loop tick. Zero-idle: every agent always has a queued secondary task.
+Coordination (TeamCreate, zero-idle, loop) is provided by [orchestrator](https://github.com/maxtechera/orchestrator). Ship provides the GTM roster and domain prompts.
+
+Nine pre-defined roles. Coordinator assigns on every loop tick.
 
 | Agent | Coverage | Notes |
 |-------|----------|-------|
