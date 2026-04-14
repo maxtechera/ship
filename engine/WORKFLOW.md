@@ -271,14 +271,30 @@ Each Ship Engine run gets a named team. Agents persist for the run duration and 
 ### Team Lifecycle
 
 **On run start (Intake):**
+```bash
+# 1. Write run marker — picked up by agent-start hook on every SubagentStart
+echo "ship-{ticket}" > .ship-run
+# e.g. echo "ship-MAX-541" > .ship-run
+
+# 2. Create team
+TeamCreate team_name="ship-{ticket}" description="Ship run {ticket} — {product_name}"
+
+# 3. Spawn agents — agent-start hook auto-injects memory + run context into each
+Agent name="researcher"   team_name="ship-{ticket}" run_in_background=true
+Agent name="strategist"   team_name="ship-{ticket}" run_in_background=true  # skip for oss_tool
+Agent name="content-lead" team_name="ship-{ticket}" run_in_background=true
+Agent name="growth"       team_name="ship-{ticket}" run_in_background=true
+Agent name="critic"       team_name="ship-{ticket}" run_in_background=true
 ```
-TeamCreate team_name="ship-{run-id}" description="Ship run {ticket} — {product_name}"
-Agent name="researcher"   team_name="ship-{run-id}" run_in_background=true
-Agent name="strategist"   team_name="ship-{run-id}" run_in_background=true  # skip for oss_tool
-Agent name="content-lead" team_name="ship-{run-id}" run_in_background=true
-Agent name="growth"       team_name="ship-{run-id}" run_in_background=true
-Agent name="critic"       team_name="ship-{run-id}" run_in_background=true
-```
+
+Each spawned agent automatically receives (via `agent-start.sh`):
+- Run reference: `ship-{ticket}` + Linear ticket ID
+- Parent session current task (from `SESSION-STATE.md`)
+- MEMORY.md router (HOT tier index)
+- WARM topic list + access instructions
+- Path to run artifacts: `runs/{ticket}/`
+
+No manual briefing of run ID needed — the hook handles it.
 
 **Assigning work:**
 ```
