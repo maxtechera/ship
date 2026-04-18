@@ -23,6 +23,11 @@ A 9-agent GTM team boots on first run. The coordinator reads your Linear tickets
 
 **The pipeline:** idea → validate → strategy → awareness → lead-capture → nurture → closing → launch → measure
 
+**Aprendé el pipeline completo → curso /ship ($497)**
+
+- Course outline: [`docs/course-outline.md`](docs/course-outline.md)
+- Free sample workbook: [`docs/course-lessons/module-1-lesson-1-workbook.md`](docs/course-lessons/module-1-lesson-1-workbook.md)
+
 **Every deploy is credential-gated.** `check_local.py` covers 30+ integrations. Missing token = blocked run, not a mid-sprint surprise.
 
 ---
