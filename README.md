@@ -5,6 +5,8 @@
 
 **Run `/ship` once. A coordinator team spawns, the dashboard renders, and work starts moving.**
 
+**Open source first, demo first. Install `/ship`, see the workflow, then join the course waitlist if you want the full operating system.**
+
 Claude Code:
 ```
 /plugin marketplace add maxtechera/ship
@@ -241,6 +243,12 @@ ship/
 ```
 
 ---
+
+## Demo-first CTA
+
+- **Install `/ship`** to see the GTM pipeline move from intake to launch.
+- **Follow the newsletter** for behind-the-scenes breakdowns, launch notes, and operating lessons.
+- **Join the $497 course waitlist** if you want the full playbook, templates, and rollout system behind the demo.
 
 ## Principles
 
