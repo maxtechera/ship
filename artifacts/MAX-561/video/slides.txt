@@ -1,0 +1,11 @@
+9,000 Claude Code plugins
+I kept 9
+---
+Tested 40+ in Q1
+47 review runs last week
+---
+Curated stack > plugin hoarding
+Operator surfaces win
+---
+Star the repo
+maxtechera/claude-plugins
