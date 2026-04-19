@@ -7,7 +7,8 @@
 
 Claude Code:
 ```
-/plugin marketplace add maxtechera/ship
+claude plugin marketplace add maxtechera/ship
+claude plugin install ship@ship
 ```
 
 OpenClaw:
@@ -40,12 +41,21 @@ A 9-agent GTM team boots on first run. The coordinator reads your Linear tickets
 
 ### Claude Code
 ```
-/plugin marketplace add maxtechera/ship
+claude plugin marketplace add maxtechera/ship
+claude plugin install ship@ship
 ```
+
+This adds the `maxtechera/ship` marketplace, then installs the `ship` plugin from it.
 
 ### Update
 ```
 claude plugin update ship@ship
+```
+
+### Verify
+```bash
+/credentials
+/ship
 ```
 
 ### OpenClaw
