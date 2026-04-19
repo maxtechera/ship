@@ -10,7 +10,7 @@
     {
       "name": "ship",
       "description": "Health-check 30+ CLIs/tokens before you deploy, then run the full GTM pipeline: validate → strategy → awareness → launch → measure.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "author": {
         "name": "maxtechera",
         "url": "https://github.com/maxtechera"

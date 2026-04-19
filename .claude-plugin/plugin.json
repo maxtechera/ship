@@ -1,6 +1,6 @@
 {
   "name": "ship",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Credentials preflight + GTM pipeline. Health-check 30+ CLIs/tokens, then execute idea → validate → market → sell → measure.",
   "author": {
     "name": "maxtechera",
@@ -10,6 +10,6 @@
   "repository": "https://github.com/maxtechera/ship",
   "license": "MIT",
   "keywords": ["credentials", "preflight", "gtm", "ship", "launch", "deploy", "health-check", "pipeline"],
-  "skills": ["credentials/SKILL.md", "ship-engine/SKILL.md", "supervisors/engine/SKILL.md"],
+  "skills": "./skills/",
   "hooks": {}
 }
