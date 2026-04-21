@@ -25,6 +25,10 @@ A 9-agent GTM team boots on first run. The coordinator reads your Linear tickets
 
 **Every deploy is credential-gated.** `check_local.py` covers 30+ integrations. Missing token = blocked run, not a mid-sprint surprise.
 
+> Hitting missing credentials or broken launch wiring? That is the exact wall **[Ship with AI](docs/ship-with-ai-course-outline.md)** is built to fix. The course walks through the full GTM workflow, from credential recovery to launch day execution, in English and Spanish.
+>
+> **[Get the Ship with AI course outline →](docs/ship-with-ai-course-outline.md)**
+
 ---
 
 ## Commands
